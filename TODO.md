@@ -1,0 +1,14 @@
+-   [x] import csv to sevalla postgres db
+        = [ ] how to decide what should be on dashboard
+-   [ ] decide on the graphs, cards and tables
+    -   what is in the graphs
+    -   what type of graph
+-   [x] cleaning
+-   [x] eda
+-   [x] warehousing
+    -   will do later
+-   [x] use looker studio fo bi
+    -   using streamlit
+-   [ ] create repository
+-   [ ] storytelling
+-   [ ] dashboard design
