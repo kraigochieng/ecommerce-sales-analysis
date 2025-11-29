@@ -1,11 +1,9 @@
 [project]
 name = "ecommerce-sales-analysis"
 version = "0.1.0"
-description = "Add your description here"
+description = "Optimizing global e-commerce operations through deep-dive analysis of revenue, returns, and shipping efficiency. Powered by Python, Streamlit, and PostgreSQL"
 readme = "README.md"
-authors = [
-    { name = "kraigochieng", email = "kraigochieng@gmail.com" }
-]
+authors = [{ name = "kraigochieng", email = "kraigochieng@gmail.com" }]
 requires-python = ">=3.11"
 dependencies = [
     "pandas>=2.3.3",
