@@ -2,11 +2,7 @@
 
 ### Background
 
-Jumbo is a sample global e-commerce company.
-
-The company has data on sales that is underutilised after transactional processing.
-
-This project analyses sales data for the Head of Global Operations in order to improve global operations.
+Jumbo is a sample global e-commerce company. The company has data on sales that is underutilised after transactional processing. This project analyses sales data for the Head of Global Operations in order to improve global operations.
 
 Insights and recommendations are provided in the following areas:
 
