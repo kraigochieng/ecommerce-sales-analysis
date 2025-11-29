@@ -1,7 +1,7 @@
 import pandas as pd
 import streamlit as st
 
-import ecommerce_analysis.queries as q
+import ecommerce_sales_analysis.queries as q
 from ecommerce_sales_analysis.db import engine
 
 
