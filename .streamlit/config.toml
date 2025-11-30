@@ -1,3 +1,5 @@
 [theme]
-font = "Nunito:https://fonts.googleapis.com/css2?family=Nunito&display=swap"
+base="dark"
+baseRadius = "1rem"
+font = "Inter:https://fonts.googleapis.com/css2?family=Inter&display=swap"
 codeFont = "'Space Mono':https://fonts.googleapis.com/css2?family=Space+Mono&display=swap"
