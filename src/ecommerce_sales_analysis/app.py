@@ -25,7 +25,7 @@ kpi1, kpi2, kpi3, kpi4, kpi5 = st.columns(5)
 with kpi1:
     st.metric(
         "Net Revenue",
-        f"${utils.format_large_number(kpis['net_revenue'])}M",
+        f"${utils.format_large_number(kpis['net_revenue'])} M",
         f"{mom_rev}%",
         delta_color="off" if mom_rev == 0 else "normal",
         border=True
