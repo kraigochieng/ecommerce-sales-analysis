@@ -2,9 +2,11 @@ import streamlit as st
 
 from ecommerce_sales_analysis import charts, data_loader, utils
 
-st.set_page_config(layout="wide")  # Optional: makes use of full screen width
-st.title("Cloud Database Dashboard")
-
+st.set_page_config(layout="wide")
+st.markdown(
+    "<h1 style='text-align: center;'>🐘 Jumbo 360°: Global Operations Dashboard</h1>", 
+    unsafe_allow_html=True
+)
 # --- 1. LOAD DATA ---
 kpis = data_loader.fetch_kpi_data()
 return_data = data_loader.fetch_return_trends()
