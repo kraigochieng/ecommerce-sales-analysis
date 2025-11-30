@@ -4,8 +4,8 @@ from ecommerce_sales_analysis import charts, data_loader, utils
 
 st.set_page_config(layout="wide")
 st.markdown(
-    "<h1 style='text-align: center;'>🐘 Jumbo 360°: Global Operations Dashboard</h1>", 
-    unsafe_allow_html=True
+    "<h1 style='text-align: center;'>Jumbo 360°: Global Operations Dashboard</h1>",
+    unsafe_allow_html=True,
 )
 # --- 1. LOAD DATA ---
 kpis = data_loader.fetch_kpi_data()
@@ -28,6 +28,7 @@ with kpi1:
         f"${utils.format_large_number(kpis['net_revenue'])}M",
         f"{mom_rev}%",
         delta_color="off" if mom_rev == 0 else "normal",
+        border=True
     )
 
 with kpi2:
@@ -36,6 +37,7 @@ with kpi2:
         f"${kpis['aov']:.2f}",
         f"{mom_aov}%",
         delta_color="off" if mom_aov == 0 else "normal",
+        border=True
     )
 
 with kpi3:
@@ -44,6 +46,7 @@ with kpi3:
         f"{kpis['return_rate']}%",
         f"{mom_ret}%",
         delta_color="off" if mom_ret == 0 else "inverse",
+        border=True
     )
 
 with kpi4:
@@ -52,6 +55,7 @@ with kpi4:
         f"{int(kpis['avg_delivery_days'])} days",
         f"{mom_del}%",
         delta_color="off" if mom_del == 0 else "inverse",
+        border=True
     )
 
 with kpi5:
@@ -60,12 +64,13 @@ with kpi5:
         f"{kpis['csat']}/5.0",
         f"{mom_csat}%",
         delta_color="off" if mom_csat == 0 else "normal",
+        border=True
     )
 
 st.markdown("---")
 
 # --- 3. RETURN RATE ANALYSIS ---
-st.subheader("📦 Return Rate Analysis")
+st.subheader("Return Rate Analysis")
 
 tab1, tab2, tab3 = st.tabs(["Overall Trend", "By Region", "By Category"])
 
@@ -101,7 +106,7 @@ with tab3:
 
 # --- 4. GROWTH ANALYSIS ---
 st.markdown("---")
-st.subheader("📈 Revenue Quality & Satisfaction")
+st.subheader("Revenue Quality & Satisfaction")
 
 col1, col2 = st.columns(2)
 
@@ -129,7 +134,7 @@ with col2:
 # --- 5. REGIONAL DELIVERY ANALYSIS ---
 # You can place this under the 'Return Rate' section or in a new row
 st.markdown("---")
-st.subheader("🚚 Regional Logistics Performance")
+st.subheader("Regional Logistics Performance")
 
 # 1. Fetch
 df_delivery_region = data_loader.fetch_avg_delivery_by_region()
