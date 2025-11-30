@@ -1,3 +1,4 @@
+import plotly.graph_objects as go
 import streamlit as st
 
 from ecommerce_sales_analysis import charts, data_loader, utils
@@ -26,46 +27,53 @@ with kpi1:
     st.metric(
         "Net Revenue",
         f"${utils.format_large_number(kpis['net_revenue'])} M",
-        f"{mom_rev}%",
+        f"{mom_rev}% MoM",
         delta_color="off" if mom_rev == 0 else "normal",
-        border=True
+        border=True,
     )
 
 with kpi2:
     st.metric(
-        "Avg Order Value",
+        "Average Order Value",
         f"${kpis['aov']:.2f}",
-        f"{mom_aov}%",
+        f"{mom_aov}% MoM",
         delta_color="off" if mom_aov == 0 else "normal",
-        border=True
+        border=True,
     )
 
 with kpi3:
     st.metric(
         "Return Rate",
         f"{kpis['return_rate']}%",
-        f"{mom_ret}%",
+        f"{mom_ret}% MoM",
         delta_color="off" if mom_ret == 0 else "inverse",
-        border=True
+        border=True,
     )
 
 with kpi4:
     st.metric(
         "Avg Delivery Days",
         f"{int(kpis['avg_delivery_days'])} days",
-        f"{mom_del}%",
+        f"{mom_del}% MoM",
         delta_color="off" if mom_del == 0 else "inverse",
-        border=True
+        border=True,
     )
 
 with kpi5:
     st.metric(
         "Customer Rating",
-        f"{kpis['csat']}/5.0",
-        f"{mom_csat}%",
+        f"{kpis['csat']} / 5 stars",
+        f"{mom_csat}% MoM",
         delta_color="off" if mom_csat == 0 else "normal",
-        border=True
+        border=True,
     )
+
+    # # 2. Native Progress Bar
+    # # We must normalize the 0-5 rating to a 0.0-1.0 scale for the bar
+    # progress_val = kpis["csat"] / 5.0
+
+    # st.progress(progress_val)
+
 
 st.markdown("---")
 
