@@ -30,7 +30,6 @@ def plot_growth_chart(df):
     return fig
 
 
-
 def plot_csat_delivery_trend(df):
     """Creates a line chart showing how rating drops as delivery takes longer."""
     fig = px.line(
@@ -49,4 +48,20 @@ def plot_csat_delivery_trend(df):
     # This prevents a tiny drop from 4.9 to 4.8 looking like a crash to zero.
     fig.update_yaxes(range=[1, 5])
 
+    return fig
+
+
+def plot_avg_delivery_by_region(df):
+    """Creates a bar chart for Average Delivery Time per Region."""
+    fig = px.bar(
+        df,
+        x="region",
+        y="avg_delivery_days",
+        title="Average Delivery Time by Region",
+        labels={"region": "Region", "avg_delivery_days": "Avg Days"},
+        color="avg_delivery_days",  # Color by value
+        color_continuous_scale="Reds",  # Red = Slower (Bad)
+        text_auto=True,  # Show the numbers on top of the bars
+    )
+    fig.update_layout(coloraxis_showscale=False)  # Hide the color bar to keep it clean
     return fig

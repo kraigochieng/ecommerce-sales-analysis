@@ -122,3 +122,18 @@ with col2:
     st.plotly_chart(fig_csat, width="stretch")
 
     st.caption("No it does not")
+
+
+# --- 5. REGIONAL DELIVERY ANALYSIS ---
+# You can place this under the 'Return Rate' section or in a new row
+st.markdown("---")
+st.subheader("🚚 Regional Logistics Performance")
+
+# 1. Fetch
+df_delivery_region = data_loader.fetch_avg_delivery_by_region()
+
+# 2. Plot
+fig_delivery_region = charts.plot_avg_delivery_by_region(df_delivery_region)
+
+# 3. Render
+st.plotly_chart(fig_delivery_region, width="stretch")

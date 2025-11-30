@@ -48,3 +48,9 @@ def fetch_csat_delivery_trend():
     # Optional filter: Remove outliers (e.g., delivery took 50 days but only happened once)
     # df = df[df['order_count'] > 10]
     return df
+
+
+@st.cache_data(ttl=600)
+def fetch_avg_delivery_by_region():
+    """Fetches average delivery time for each region."""
+    return pd.read_sql(q.AVG_DELIVERY_BY_REGION_QUERY, engine)

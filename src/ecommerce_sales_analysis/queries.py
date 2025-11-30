@@ -51,3 +51,13 @@ CSAT_DELIVERY_AGG_QUERY = """
     GROUP BY delivery_days
     ORDER BY delivery_days ASC;
 """
+
+
+AVG_DELIVERY_BY_REGION_QUERY = """
+    SELECT 
+        region, 
+        ROUND(AVG(delivery_days), 1) as avg_delivery_days
+    FROM orders_cleaned
+    GROUP BY region
+    ORDER BY avg_delivery_days DESC;
+"""
