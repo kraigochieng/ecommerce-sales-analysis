@@ -9,6 +9,8 @@
     -   will do later
 -   [x] use looker studio fo bi
     -   using streamlit
--   [ ] create repository
+-   [x] create repository
 -   [ ] storytelling
--   [ ] dashboard design
+-   [x] dashboard design
+-   [ ] add images to readme
+-   [ ] organise the dashboard better
