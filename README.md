@@ -6,10 +6,10 @@ Jumbo is a sample global e-commerce company. The company has data on sales that 
 
 Insights and recommendations are provided in the following areas:
 
--   **Sales Trend Analysis**: Average Order Value (AOV) and Net Revenue being looked at
--   **Average Delivery Time**: Seeing if a certain _region_ affects this and seeing where to optimise in that region
--   **Return Rate**: Seeing if a certain _product category_ and/or _region_ affects this and seeing where to optimise
--   **Correlations**: Correlation between Customer satisfaction and Delivery Time
+-   **Sales Trend Analysis**: Monitoring Net Revenue and AOV stability to ensure growth is driven by genuine demand, not just discounting.
+-   **Delivery Optimization**: breaking down Average Delivery Time by Region to pinpoint specific territories where carrier performance is lagging.
+-   **Margin Protection**: Analyzing Return Rate by Product Category to identify specific items (e.g., Fashion) that are eroding profits.
+-   **Service Level Analysis**: Testing the correlation between Delivery Speed and CSAT to determine if faster shipping actually improves customer loyalty.
 
 SQL queries for [DDL](/sql/ddl.sql), [Data Cleaning and Augmentation](/sql/cleaning.sql) and [ETL](/sql/etl.sql)
 
