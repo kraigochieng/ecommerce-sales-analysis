@@ -46,3 +46,10 @@
 Other
 
 The dashboard is specifically designed to answer the following executive-driven diagnostic questions:
+
+
+Who? Global Head of Operations at Jumbo
+Why? To protect profit margins by identifying and resolving operational inefficiencies (high returns, slow delivery) before they impact quarterly targets.
+What? Sales Health: Net Revenue, AOV. Operational Friction: Return Rate, Avg Delivery Days. Customer Sentiment: CSAT Score.
+How? Diagnose: Filter by Region to isolate logistics bottlenecks.Investigate: Drill down into Product Categories to identify low-quality SKUs driving returns. Correlate: Compare Delivery Time vs. CSAT to validate SLA adjustments.
+When? Monthly
