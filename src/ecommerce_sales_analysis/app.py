@@ -1,3 +1,5 @@
+import datetime
+
 import plotly.graph_objects as go
 import streamlit as st
 
@@ -5,11 +7,21 @@ from ecommerce_sales_analysis import charts, data_loader, utils
 
 st.set_page_config(layout="wide")
 st.markdown(
+    """
+    <style>
+        .block-container {padding-top: 1rem; padding-bottom: 0rem;}
+        h1 {margin-bottom: 0rem;}
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+st.markdown(
     "<h1 style='text-align: center;'>Jumbo 360°: Global Operations Dashboard</h1>",
     unsafe_allow_html=True,
 )
-# --- 1. LOAD DATA ---
+
 kpis = data_loader.fetch_kpi_data()
+spark_data = data_loader.fetch_sparkline_lists()
 return_data = data_loader.fetch_return_trends()
 df_growth = data_loader.fetch_growth_data()
 
@@ -28,15 +40,21 @@ with kpi1:
         "Net Revenue",
         f"${utils.format_large_number(kpis['net_revenue'])} M",
         f"{mom_rev}% MoM",
+        chart_data=spark_data["revenue"],
+        chart_type="line",
         delta_color="off" if mom_rev == 0 else "normal",
         border=True,
     )
+
+    # st.area_chart(spark_data['revenue'], height=40)
 
 with kpi2:
     st.metric(
         "Average Order Value",
         f"${kpis['aov']:.2f}",
         f"{mom_aov}% MoM",
+        chart_data=spark_data["aov"],
+        chart_type="line",
         delta_color="off" if mom_aov == 0 else "normal",
         border=True,
     )
@@ -46,6 +64,8 @@ with kpi3:
         "Return Rate",
         f"{kpis['return_rate']}%",
         f"{mom_ret}% MoM",
+        chart_data=spark_data["return_rate"],
+        chart_type="line",
         delta_color="off" if mom_ret == 0 else "inverse",
         border=True,
     )
@@ -55,100 +75,163 @@ with kpi4:
         "Avg Delivery Days",
         f"{int(kpis['avg_delivery_days'])} days",
         f"{mom_del}% MoM",
+        chart_data=spark_data["delivery"],
+        chart_type="line",
         delta_color="off" if mom_del == 0 else "inverse",
         border=True,
     )
 
 with kpi5:
     st.metric(
-        "Customer Rating",
+        "CSAT",
         f"{kpis['csat']} / 5 stars",
         f"{mom_csat}% MoM",
+        chart_data=spark_data["csat"],
+        chart_type="line",
         delta_color="off" if mom_csat == 0 else "normal",
         border=True,
     )
 
-    # # 2. Native Progress Bar
-    # # We must normalize the 0-5 rating to a 0.0-1.0 scale for the bar
-    # progress_val = kpis["csat"] / 5.0
 
-    # st.progress(progress_val)
+overview_column, in_depth_column = st.columns(2)
 
+breakdown_data = data_loader.fetch_metric_breakdowns()
+df_region = breakdown_data["by_region"]
+df_cat = breakdown_data["by_category"]
 
-st.markdown("---")
-
-# --- 3. RETURN RATE ANALYSIS ---
-st.subheader("Return Rate Analysis")
-
-tab1, tab2, tab3 = st.tabs(["Overall Trend", "By Region", "By Category"])
-
-with tab1:
-    fig = charts.plot_line_chart(
-        return_data["overall"],
-        "order_date_year_month",
-        "return_rate",
-        "Global Return Rate Trend",
+with overview_column:
+    tab_rev, tab_aov, tab_ret, tab_del, tab_csat = st.tabs(
+        ["Revenue", "AOV", "Returns", "Delivery", "CSAT"]
     )
-    fig.update_traces(line_color="red")
-    st.plotly_chart(fig, width="stretch")
 
-with tab2:
-    fig = charts.plot_line_chart(
-        return_data["region"],
-        "order_date_year_month",
-        "return_rate",
-        "Return Rate by Region",
-        color_col="region",
-    )
-    st.plotly_chart(fig, width="stretch")
+    with tab_rev:
+        with st.container(border=True):
+            st.plotly_chart(
+                charts.plot_breakdown_bar(
+                    df_region,
+                    "dimension_value",
+                    "net_revenue",
+                    "Net Revenue by Region",
+                    "Greens",
+                ),
+                use_container_width=True,
+            )
+        with st.container(border=True):
+            st.plotly_chart(
+                charts.plot_breakdown_bar(
+                    df_cat,
+                    "dimension_value",
+                    "net_revenue",
+                    "Net Revenue by Category",
+                    "Greens",
+                ),
+                use_container_width=True,
+            )
 
-with tab3:
-    fig = charts.plot_line_chart(
-        return_data["category"],
-        "order_date_year_month",
-        "return_rate",
-        "Return Rate by Category",
-        color_col="product_category",
-    )
-    st.plotly_chart(fig, width="stretch")
+    # ------------------------------------------------------------------
+    # TAB 2: AOV (Blue Theme)
+    # ------------------------------------------------------------------
+    with tab_aov:
+        with st.container(border=True):
+            st.plotly_chart(
+                charts.plot_breakdown_bar(
+                    df_region, "dimension_value", "aov", "AOV by Region", "Blues"
+                ),
+                use_container_width=True,
+            )
+        with st.container(border=True):
+            st.plotly_chart(
+                charts.plot_breakdown_bar(
+                    df_cat, "dimension_value", "aov", "AOV by Category", "Blues"
+                ),
+                use_container_width=True,
+            )
 
-# --- 4. GROWTH ANALYSIS ---
-st.markdown("---")
-st.subheader("Revenue Quality & Satisfaction")
+    # ------------------------------------------------------------------
+    # TAB 3: RETURNS (Red Theme)
+    # ------------------------------------------------------------------
+    with tab_ret:
+        with st.container(border=True):
+            st.plotly_chart(
+                charts.plot_breakdown_bar(
+                    df_region,
+                    "dimension_value",
+                    "return_rate",
+                    "Return Rate % by Region",
+                    "Reds",
+                ),
+                use_container_width=True,
+            )
+        with st.container(border=True):
+            st.plotly_chart(
+                charts.plot_breakdown_bar(
+                    df_cat,
+                    "dimension_value",
+                    "return_rate",
+                    "Return Rate % by Category",
+                    "Reds",
+                ),
+                use_container_width=True,
+            )
 
-col1, col2 = st.columns(2)
+    # ------------------------------------------------------------------
+    # TAB 4: DELIVERY (Orange Theme)
+    # ------------------------------------------------------------------
+    with tab_del:
+        with st.container(border=True):
+            st.plotly_chart(
+                charts.plot_breakdown_bar(
+                    df_region,
+                    "dimension_value",
+                    "avg_delivery_days",
+                    "Avg Delivery Days by Region",
+                    "Oranges",
+                ),
+                use_container_width=True,
+            )
+        with st.container(border=True):
+            st.plotly_chart(
+                charts.plot_breakdown_bar(
+                    df_cat,
+                    "dimension_value",
+                    "avg_delivery_days",
+                    "Avg Delivery Days by Category",
+                    "Oranges",
+                ),
+                use_container_width=True,
+            )
 
-with col1:
-    st.caption("Does selling more expensive items drive growth?")
-    fig_growth = charts.plot_growth_chart(df_growth)
-    st.plotly_chart(fig_growth, width="stretch")
+    # ------------------------------------------------------------------
+    # TAB 5: CSAT (Purple Theme)
+    # ------------------------------------------------------------------
+    with tab_csat:
+        with st.container(border=True):
+            st.plotly_chart(
+                charts.plot_breakdown_bar(
+                    df_region, "dimension_value", "csat", "CSAT by Region", "Purples"
+                ),
+                use_container_width=True,
+            )
+        with st.container(border=True):
+            st.plotly_chart(
+                charts.plot_breakdown_bar(
+                    df_cat, "dimension_value", "csat", "CSAT by Category", "Purples"
+                ),
+                use_container_width=True,
+            )
 
 
-with col2:
-    st.caption("Does slower delivery hurt our ratings?")
+with in_depth_column:
+    with st.container(border=True):
+        fig_growth = charts.plot_growth_chart(df_growth)
+        st.plotly_chart(fig_growth, width="stretch")
 
-    # 1. Fetch Aggregated Data
-    df_csat_agg = data_loader.fetch_csat_delivery_trend()
+    with st.container(border=True):
+        # 1. Fetch Aggregated Data
+        df_csat_agg = data_loader.fetch_csat_delivery_trend()
 
-    # 2. Plot Line Chart
-    fig_csat = charts.plot_csat_delivery_trend(df_csat_agg)
+        # 2. Plot Line Chart
+        fig_csat = charts.plot_csat_delivery_trend(df_csat_agg)
 
-    # 3. Render
-    st.plotly_chart(fig_csat, width="stretch")
-
-    st.caption("No it does not")
-
-
-# --- 5. REGIONAL DELIVERY ANALYSIS ---
-# You can place this under the 'Return Rate' section or in a new row
-st.markdown("---")
-st.subheader("Regional Logistics Performance")
-
-# 1. Fetch
-df_delivery_region = data_loader.fetch_avg_delivery_by_region()
-
-# 2. Plot
-fig_delivery_region = charts.plot_avg_delivery_by_region(df_delivery_region)
-
-# 3. Render
-st.plotly_chart(fig_delivery_region, width="stretch")
+        # 3. Render
+        st.plotly_chart(fig_csat, width="stretch")
