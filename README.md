@@ -1,4 +1,4 @@
-# E-commerce Dashboard
+# Jumbo Global Operations Dashboard
 
 ### Project Background
 
