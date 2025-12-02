@@ -2,7 +2,7 @@
 
 <figure>
     <img src="docs/dashboard-screenshot.png" alt="ERD" width="800">
-    <figcaption>Screenshot of Jumbo Global Operations Dashboard</figcaption>
+    <figcaption>Screenshot of <a href="https://ecommerce-sales-analysis.streamlit.app/">Jumbo Global Operations Dashboard</a></figcaption>
 </figure>
 
 ### Project Background
@@ -16,9 +16,7 @@ Insights and recommendations are provided in the following areas:
 -   **Margin Protection**: Analyzing Return Rate by Product Category to identify specific items (e.g., Fashion) that are eroding profits.
 -   **Service Level Analysis**: Testing the correlation between Delivery Speed and CSAT to determine if faster shipping actually improves customer loyalty.
 
-SQL queries for [DDL](/sql/ddl.sql), [Data Cleaning and Augmentation](/sql/cleaning.sql) and [ETL](/sql/etl.sql)
-
-Find the dashboard [here](https://ecommerce-sales-analysis.streamlit.app/)
+SQL queries for [DDL](/sql/ddl.sql), [Data Cleaning and Augmentation](/sql/cleaning.sql) and [ETL](/sql/etl.sql). Find the dashboard [here](https://ecommerce-sales-analysis.streamlit.app/)
 
 ### Data Structure Overview
 
