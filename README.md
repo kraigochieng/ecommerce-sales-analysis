@@ -5,6 +5,8 @@
     <figcaption>Screenshot of <a href="https://ecommerce-sales-analysis.streamlit.app/">Jumbo Global Operations Dashboard</a></figcaption>
 </figure>
 
+---
+
 ### Project Background
 
 Jumbo is a sample global e-commerce company. The company has data on sales that is underutilised after transactional processing. This project analyses sales data for the Head of Global Operations in order to improve global operations.
@@ -18,6 +20,8 @@ Insights and recommendations are provided in the following areas:
 
 SQL queries for [DDL](/sql/ddl.sql), [Data Cleaning and Augmentation](/sql/cleaning.sql) and [ETL](/sql/etl.sql). Find the dashboard [here](https://ecommerce-sales-analysis.streamlit.app/)
 
+---
+
 ### Data Structure Overview
 
 Rows: 100,000
@@ -27,9 +31,11 @@ Rows: 100,000
     <figcaption>ERD diagram of data</figcaption>
 </figure>
 
+---
+
 ### Executive Summary
 
-#### Net Revenue & AOV Seasonal Spike
+#### 1. Net Revenue & AOV Seasonal Spike
 
 **Insight**  
 Both _Net Revenue_ and _AOV_ spike by `~20%` in November, drop by `~20%` in December, then return to normal `~10%` MoM growth in January.
@@ -44,7 +50,7 @@ Both _Net Revenue_ and _AOV_ spike by `~20%` in November, drop by `~20%` in Dece
 -   Run a **New Year retention campaign** targeting November one-time buyers
 -   Increase warehouse staffing in early January to handle **return volume**
 
-#### High Fashion Return Rate
+#### 2. High Fashion Return Rate
 
 **Insight**  
 Fashion items have a `~12%` _return rate_, almost double other categories (`~6%`).
@@ -57,7 +63,7 @@ Fashion items have a `~12%` _return rate_, almost double other categories (`~6%`
 -   Add **AI sizing tools** or “True-to-Fit” reviews
 -   Provide high-resolution **fabric close-ups** to set better expectations
 
-#### Delivery Time Consistency Across Regions
+#### 3. Delivery Time Consistency Across Regions
 
 **Insight**  
 _Average delivery time_ is the same across all regions at `~5 days`.
@@ -70,7 +76,7 @@ _Average delivery time_ is the same across all regions at `~5 days`.
 -   Market your **“Consistent Global Delivery”** as a value proposition
 -   Evaluate the ROI of **local warehousing** vs. your already efficient central hub
 
-#### No Correlation Between Delivery Time & CSAT
+#### 4. No Correlation Between Delivery Time & CSAT
 
 **Insight**  
 _CSAT_ remains around `3.5/5`, regardless of how fast orders are delivered.
@@ -82,6 +88,8 @@ _CSAT_ remains around `3.5/5`, regardless of how fast orders are delivered.
 
 -   Shift from fast shipping to **economy shipping** to reduce logistics cost
 -   Reinvest savings into **Quality Control**, especially for fashion SKUs
+
+---
 
 ### Caveats and Assumptions
 
