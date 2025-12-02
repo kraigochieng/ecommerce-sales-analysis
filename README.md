@@ -1,5 +1,10 @@
 # Jumbo Global Operations Dashboard
 
+<figure>
+    <img src="docs/dashboard-screenshot.png" alt="ERD" width="800">
+    <figcaption>Screenshot of Jumbo Global Operations Dashboard</figcaption>
+</figure>
+
 ### Project Background
 
 Jumbo is a sample global e-commerce company. The company has data on sales that is underutilised after transactional processing. This project analyses sales data for the Head of Global Operations in order to improve global operations.
@@ -29,7 +34,7 @@ Rows: 100,000
 #### Net Revenue & AOV Seasonal Spike
 
 **Insight**  
-Both **Net Revenue** and **AOV** spike by ~20% in **November**, drop by ~20% in **December**, then return to normal ~10% MoM growth in **January**.
+Both _Net Revenue_ and _AOV_ spike by `~20%` in November, drop by `~20%` in December, then return to normal `~10%` MoM growth in January.
 
 **Visualization**  
 <img src="docs/insights/aov-vs-revenue.png" width="650"/>
@@ -44,7 +49,7 @@ Both **Net Revenue** and **AOV** spike by ~20% in **November**, drop by ~20% in 
 #### High Fashion Return Rate
 
 **Insight**  
-Fashion items have a **~12% return rate**, almost double other categories (**~6%**).
+Fashion items have a `~12%` _return rate_, almost double other categories (`~6%`).
 
 **Visualization**  
 <img src="docs/insights/fashion-return-rate.png" width="650"/>
@@ -57,7 +62,7 @@ Fashion items have a **~12% return rate**, almost double other categories (**~6%
 #### Delivery Time Consistency Across Regions
 
 **Insight**  
-Average delivery time is the same across all regions at **~5 days**.
+_Average delivery time_ is the same across all regions at `~5 days`.
 
 **Visualization**  
 <img src="docs/insights/avg-delivery-per-region.png" width="650"/>
@@ -70,7 +75,7 @@ Average delivery time is the same across all regions at **~5 days**.
 #### No Correlation Between Delivery Time & CSAT
 
 **Insight**  
-CSAT remains around **3.5/5**, regardless of how fast orders are delivered.
+_CSAT_ remains around `3.5/5`, regardless of how fast orders are delivered.
 
 **Visualization**  
 <img src="docs/insights/correlation-csat-delivery.png" width="650"/>
