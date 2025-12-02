@@ -26,12 +26,59 @@ Rows: 100,000
 
 ### Executive Summary
 
-| Insights                                                                                                                                                 | Recommendations                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
-| :------------------------------------------------------------------------------------------------------------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Both _Net Revenue_ and _AOV_ spike by `~20%` in November then go down in December by `~-20%` before going back to normal MoM growth of `~10%` in January | <ul><li><strong>Marketing:</strong> Pivot December ads to <strong>Gift Cards</strong> and <strong>Express Shipping</strong> to capture late shoppers after the main rush.</li><li><strong>Merchandising:</strong> Use <strong>bundle-only deals</strong> in November to maximize the natural spike in order value (AOV).</li><li><strong>Retention:</strong> Launch a <strong>"New Year" email campaign</strong> to turn one-time November buyers into recurring January customers.</li><li><strong>Operations:</strong> Increase warehouse staffing in early January specifically to handle the <strong>post-holiday return wave</strong>.</li></ul> |
-| _Return rate_ for fashion items `(~12%)` is almost double compared to other product categories `(~6%)`                                                   | <ul><li>Implement AI sizing tools or "True-to-Fit" reviews to reduce sizing errors.</li><li>Add high-resolution fabric close-ups to manage material expectations better.</li></ul>                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
-| _Average Delivery Time_ per region has the same `(5 days)`.                                                                                              | <ul><li><strong>Marketing</strong>: Promote your "Consistent Global Delivery" as a key value prop in remote markets.</li><li><strong>Operations</strong>: Investigate if local warehousing is necessary, or if a centralized hub is sufficient given the consistency.</li></ul>                                                                                                                                                                                                                                                                                                                                                                       |
-| _Average Delivery Time_ and _CSAT_ have no correlation. CSAT remains to be `3.5/5` the same across                                                       | <ul><li><strong>Cost Savings</strong>: Switch to economy shipping tiers to improve margins, as speed does not impact satisfaction.</li><li><strong>Strategy</strong>: Stop optimizing for speed and reallocate that budget to Quality Control to lower the Fashion return rate.</li></ul>                                                                                                                                                                                                                                                                                                                                                             |
+#### Net Revenue & AOV Seasonal Spike
+
+**Insight**  
+Both **Net Revenue** and **AOV** spike by ~20% in **November**, drop by ~20% in **December**, then return to normal ~10% MoM growth in **January**.
+
+**Visualization**  
+<img src="docs/insights/aov-vs-revenue.png" width="650"/>
+
+**Recommendations**
+
+-   Pivot December ads to **Gift Cards** & **Express Shipping** for last-minute shoppers
+-   Offer **bundle-only deals** in November to maximize natural AOV uplift
+-   Run a **New Year retention campaign** targeting November one-time buyers
+-   Increase warehouse staffing in early January to handle **return volume**
+
+#### High Fashion Return Rate
+
+**Insight**  
+Fashion items have a **~12% return rate**, almost double other categories (**~6%**).
+
+**Visualization**  
+<img src="docs/insights/fashion-return-rate.png" width="650"/>
+
+**Recommendations**
+
+-   Add **AI sizing tools** or “True-to-Fit” reviews
+-   Provide high-resolution **fabric close-ups** to set better expectations
+
+#### Delivery Time Consistency Across Regions
+
+**Insight**  
+Average delivery time is the same across all regions at **~5 days**.
+
+**Visualization**  
+<img src="docs/insights/avg-delivery-per-region.png" width="650"/>
+
+**Recommendations**
+
+-   Market your **“Consistent Global Delivery”** as a value proposition
+-   Evaluate the ROI of **local warehousing** vs. your already efficient central hub
+
+#### No Correlation Between Delivery Time & CSAT
+
+**Insight**  
+CSAT remains around **3.5/5**, regardless of how fast orders are delivered.
+
+**Visualization**  
+<img src="docs/insights/correlation-csat-delivery.png" width="650"/>
+
+**Recommendations**
+
+-   Shift from fast shipping to **economy shipping** to reduce logistics cost
+-   Reinvest savings into **Quality Control**, especially for fashion SKUs
 
 ### Caveats and Assumptions
 
