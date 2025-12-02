@@ -3,6 +3,7 @@ import plotly.express as px
 # BRAND_COLOR = "#5D9CEC"
 BRAND_COLOR = "#FFFFFF"
 
+
 def plot_line_chart(df, x_col, y_col, title, color_col=None):
     """Generic function to create consistent line charts."""
     fig = px.line(
@@ -67,8 +68,8 @@ def plot_csat_delivery_trend(df):
     fig.update_layout(
         height=250,  # Force small height
         margin=dict(l=20, r=20, t=40, b=20),  # Tight margins
-        xaxis_title=None,  # Remove axis title if the graph is obvious
-        yaxis_title=None,
+        xaxis_title="Delivery Speed (days)",
+        yaxis_title="CSAT",
     )
 
     return fig
@@ -90,10 +91,24 @@ def plot_avg_delivery_by_region(df):
     return fig
 
 
+COLUMN_LABELS = {
+    "net_revenue": "Net Revenue ($)",
+    "aov": "Avg Order Value ($)",
+    "return_rate": "Return Rate (%)",
+    "avg_delivery_days": "Avg Delivery (Days)",
+    "csat": "Rating (1-5)",
+    "dimension_value": "Segment",  # Generic label for X-axis
+    "region": "Region",
+    "product_category": "Category",
+}
+
+
 def plot_breakdown_bar(df, x_col, y_col, title, color_theme="Blues"):
     """
     Generic bar chart for metric breakdowns.
     """
+    metric_label = COLUMN_LABELS.get(y_col, y_col)
+
     fig = px.bar(
         df,
         x=x_col,
@@ -102,8 +117,14 @@ def plot_breakdown_bar(df, x_col, y_col, title, color_theme="Blues"):
         text_auto=".2s",  # Format numbers (e.g., 1.2M)
         # color=y_col,
         # color_continuous_scale=color_theme,
-        color_discrete_sequence=[BRAND_COLOR]
+        color_discrete_sequence=[BRAND_COLOR],
+        labels=COLUMN_LABELS,
     )
     # Hide the color bar to keep it clean and set a consistent height
-    fig.update_layout(coloraxis_showscale=False, height=250)
+    fig.update_layout(
+        coloraxis_showscale=False,
+        height=250,
+        xaxis_title=None,
+        yaxis_title=metric_label,
+    )
     return fig
