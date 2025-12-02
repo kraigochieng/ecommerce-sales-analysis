@@ -114,7 +114,7 @@ with overview_column:
                     "Net Revenue by Region",
                     "Greens",
                 ),
-                use_container_width=True,
+                width="stretch",
             )
         with st.container(border=True):
             st.plotly_chart(
@@ -125,7 +125,7 @@ with overview_column:
                     "Net Revenue by Category",
                     "Greens",
                 ),
-                use_container_width=True,
+                width="stretch",
             )
 
     # ------------------------------------------------------------------
@@ -137,14 +137,14 @@ with overview_column:
                 charts.plot_breakdown_bar(
                     df_region, "dimension_value", "aov", "AOV by Region", "Blues"
                 ),
-                use_container_width=True,
+                width="stretch",
             )
         with st.container(border=True):
             st.plotly_chart(
                 charts.plot_breakdown_bar(
                     df_cat, "dimension_value", "aov", "AOV by Category", "Blues"
                 ),
-                use_container_width=True,
+                width="stretch",
             )
 
     # ------------------------------------------------------------------
@@ -160,7 +160,7 @@ with overview_column:
                     "Return Rate % by Region",
                     "Reds",
                 ),
-                use_container_width=True,
+                width="stretch",
             )
         with st.container(border=True):
             st.plotly_chart(
@@ -171,7 +171,7 @@ with overview_column:
                     "Return Rate % by Category",
                     "Reds",
                 ),
-                use_container_width=True,
+                width="stretch",
             )
 
     # ------------------------------------------------------------------
@@ -187,7 +187,7 @@ with overview_column:
                     "Avg Delivery Days by Region",
                     "Oranges",
                 ),
-                use_container_width=True,
+                width="stretch",
             )
         with st.container(border=True):
             st.plotly_chart(
@@ -198,7 +198,7 @@ with overview_column:
                     "Avg Delivery Days by Category",
                     "Oranges",
                 ),
-                use_container_width=True,
+                width="stretch",
             )
 
     # ------------------------------------------------------------------
@@ -210,14 +210,14 @@ with overview_column:
                 charts.plot_breakdown_bar(
                     df_region, "dimension_value", "csat", "CSAT by Region", "Purples"
                 ),
-                use_container_width=True,
+                width="stretch",
             )
         with st.container(border=True):
             st.plotly_chart(
                 charts.plot_breakdown_bar(
                     df_cat, "dimension_value", "csat", "CSAT by Category", "Purples"
                 ),
-                use_container_width=True,
+                width="stretch",
             )
 
 
