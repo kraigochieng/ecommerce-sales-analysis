@@ -4,8 +4,21 @@ import plotly.graph_objects as go
 import streamlit as st
 
 from ecommerce_sales_analysis import charts, data_loader, utils
+from ecommerce_sales_analysis.setup_db import ensure_db
 
 st.set_page_config(layout="wide")
+
+
+@st.cache_resource
+def _bootstrap_db():
+    """Builds the SQLite db from the committed CSV on first run in a fresh
+    container (e.g. Streamlit Cloud); a no-op on later reruns."""
+    ensure_db()
+    return True
+
+
+with st.spinner("Setting up database..."):
+    _bootstrap_db()
 st.markdown(
     """
     <style>
