@@ -10,7 +10,8 @@ SELECT
 	SUM(revenue) AS net_revenue,
 	ROUND(AVG(revenue), 2) AS aov,
 	ROUND(AVG(delivery_days), 1) AS avg_delivery_days,
-	ROUND(SUM(is_returned)::DECIMAL / COUNT(is_returned) * 100, 2) AS return_rate,
+	-- ROUND(SUM(is_returned)::DECIMAL / COUNT(is_returned) * 100, 2) AS return_rate,
+	ROUND(CAST(SUM(is_returned) AS REAL) / COUNT(is_returned) * 100, 2) AS return_rate,
 	ROUND(AVG(customer_rating), 1) AS csat
 FROM
 	orders_cleaned

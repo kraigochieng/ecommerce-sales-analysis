@@ -1,3 +1,6 @@
+-- SQLite has a grammar ambiguity when an INSERT...SELECT's FROM has no WHERE
+-- clause right before an upsert ON CONFLICT (it can't tell "ON" apart from a
+-- join condition), so a harmless "WHERE TRUE" is added below to disambiguate.
 INSERT
 	INTO
 	dim_region (region_name)
@@ -6,6 +9,8 @@ SELECT
 FROM
 	orders_cleaned
 	-- The 'ON CONFLICT' clause prevents errors if you run this script twice
+WHERE
+	TRUE
 ON
 	CONFLICT (region_name) DO NOTHING;
 
@@ -16,6 +21,8 @@ SELECT
 	DISTINCT product_category
 FROM
 	orders_cleaned
+WHERE
+	TRUE
 ON
 	CONFLICT (product_category) DO NOTHING;
 
@@ -26,8 +33,27 @@ SELECT
 	DISTINCT customer_id
 FROM
 	orders_cleaned
+WHERE
+	TRUE
 ON
 	CONFLICT (customer_id) DO NOTHING;
+
+-- INSERT
+-- 	INTO
+-- 	dim_date (date_id,
+-- 	order_date_year,
+-- 	order_date_month,
+-- 	order_date_year_month_str)
+-- SELECT
+-- 	DISTINCT
+--     order_date,
+-- 	EXTRACT(YEAR FROM order_date) AS order_date_year,
+-- 	EXTRACT(MONTH FROM order_date) AS order_date_month,
+-- 	TO_CHAR(order_date, 'YYYY-MM') AS order_date_year_month_str
+-- FROM
+-- 	orders_cleaned
+-- ON
+-- 	CONFLICT (date_id) DO NOTHING;
 
 INSERT
 	INTO
@@ -36,13 +62,15 @@ INSERT
 	order_date_month,
 	order_date_year_month_str)
 SELECT
-	DISTINCT 
+	DISTINCT
     order_date,
-	EXTRACT(YEAR FROM order_date) AS order_date_year,
-	EXTRACT(MONTH FROM order_date) AS order_date_month,
-	TO_CHAR(order_date, 'YYYY-MM') AS order_date_year_month_str
+	CAST(strftime('%Y', order_date) AS INTEGER) AS order_date_year,
+	CAST(strftime('%m', order_date) AS INTEGER) AS order_date_month,
+	strftime('%Y-%m', order_date) AS order_date_year_month_str
 FROM
 	orders_cleaned
+WHERE
+	TRUE
 ON
 	CONFLICT (date_id) DO NOTHING;
 
