@@ -13,9 +13,10 @@ DYNAMIC_KPI_SQL = text("""
         SUM(revenue) as net_revenue,
         AVG(revenue) as aov,
         -- Handle division by zero for return rate
-        CASE 
-            WHEN COUNT(*) = 0 THEN 0 
-            ELSE (SUM(is_returned)::numeric / COUNT(*)) * 100 
+        CASE
+            WHEN COUNT(*) = 0 THEN 0
+            -- ELSE (SUM(is_returned)::numeric / COUNT(*)) * 100
+            ELSE (CAST(SUM(is_returned) AS REAL) / COUNT(*)) * 100
         END as return_rate,
         AVG(delivery_days) as avg_delivery_days,
         AVG(customer_rating) as csat
@@ -32,26 +33,29 @@ RETURN_RATE_BY_CAT_QUERY = """
     SELECT
         order_date_year_month,
         product_category,
-        ROUND((SUM(is_returned)::numeric / COUNT(*)) * 100, 2) AS return_rate
+        -- ROUND((SUM(is_returned)::numeric / COUNT(*)) * 100, 2) AS return_rate
+        ROUND((CAST(SUM(is_returned) AS REAL) / COUNT(*)) * 100, 2) AS return_rate
     FROM orders_cleaned
     GROUP BY order_date_year_month, product_category
     ORDER BY order_date_year_month ASC;
 """
 
 RETURN_RATE_BY_REGION_QUERY = """
-    SELECT 
-        order_date_year_month, 
-        region, 
-        ROUND((SUM(is_returned)::numeric / COUNT(*)) * 100, 2) AS return_rate
+    SELECT
+        order_date_year_month,
+        region,
+        -- ROUND((SUM(is_returned)::numeric / COUNT(*)) * 100, 2) AS return_rate
+        ROUND((CAST(SUM(is_returned) AS REAL) / COUNT(*)) * 100, 2) AS return_rate
     FROM orders_cleaned
     GROUP BY order_date_year_month, region
     ORDER BY order_date_year_month ASC;
 """
 
 RETURN_RATE_OVERALL_QUERY = """
-    SELECT 
-        order_date_year_month, 
-        ROUND((SUM(is_returned)::numeric / COUNT(*)) * 100, 2) AS return_rate
+    SELECT
+        order_date_year_month,
+        -- ROUND((SUM(is_returned)::numeric / COUNT(*)) * 100, 2) AS return_rate
+        ROUND((CAST(SUM(is_returned) AS REAL) / COUNT(*)) * 100, 2) AS return_rate
     FROM orders_cleaned
     GROUP BY order_date_year_month
     ORDER BY order_date_year_month ASC;
@@ -149,11 +153,12 @@ def get_dynamic_kpi_query(
 
 
 DIMENSION_BREAKDOWN_SQL = text("""
-    SELECT 
+    SELECT
         {dimension_col} as dimension_value,
         SUM(revenue) as net_revenue,
         AVG(revenue) as aov,
-        (SUM(is_returned)::numeric / COUNT(*)) * 100 as return_rate,
+        -- (SUM(is_returned)::numeric / COUNT(*)) * 100 as return_rate,
+        (CAST(SUM(is_returned) AS REAL) / COUNT(*)) * 100 as return_rate,
         AVG(delivery_days) as avg_delivery_days,
         AVG(customer_rating) as csat
     FROM orders_cleaned
