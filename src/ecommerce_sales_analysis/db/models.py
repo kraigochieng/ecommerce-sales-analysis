@@ -4,6 +4,24 @@ from sqlalchemy.orm import declarative_base, relationship
 Base = declarative_base()
 
 
+class Orders(Base):
+    __tablename__ = "orders"
+
+    order_id = Column(String(50), primary_key=True)
+    customer_id = Column(String(50), nullable=False)
+    product_category = Column(String(50))
+    product_price = Column(Numeric(10, 2))
+    quantity = Column(Integer)
+    order_date = Column(Date)
+    region = Column(String(50))
+    payment_method = Column(String(50))
+    delivery_days = Column(Integer)
+    is_returned = Column(Integer)
+    customer_rating = Column(Numeric(2, 1))
+    discount_percent = Column(Integer)
+    revenue = Column(Numeric(10, 2))
+
+
 class FactOrder(Base):
     __tablename__ = "fact_order"
 
