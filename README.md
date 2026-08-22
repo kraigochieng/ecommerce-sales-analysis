@@ -20,6 +20,8 @@ Insights and recommendations are provided in the following areas:
 
 SQL queries for [DDL](/sql/ddl.sql), [Data Cleaning and Augmentation](/sql/cleaning.sql) and [ETL](/sql/etl.sql). Find the dashboard [here](https://ecommerce-sales-analysis.streamlit.app/)
 
+_For database setup and technical/architecture decisions, see [ENGINEERING.md](/ENGINEERING.md)._
+
 ---
 
 ### Data Structure Overview
