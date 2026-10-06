@@ -359,19 +359,67 @@ function fashionSection(byCategory, byRegionCategory) {
   return section;
 }
 
+// --- finding 3: delivery time -------------------------------------------------
+
+function deliverySection(byRegion, byDays) {
+  const days = byRegion.map((r) => r.avg_delivery_days);
+  const lo = Math.min(...days), hi = Math.max(...days);
+  const totalOrders = byDays.reduce((a, r) => a + r.order_count, 0);
+  const overall = byDays.reduce((a, r) => a + r.delivery_days * r.order_count, 0) / totalOrders;
+  const fastest = Math.min(...byDays.map((r) => r.delivery_days));
+  const slowest = Math.max(...byDays.map((r) => r.delivery_days));
+
+  const section = storySection({
+    num: 3,
+    title: "Delivery takes 5 days in every region.",
+    lede: [
+      { b: `The slowest region is only ${(hi - lo).toFixed(2)} days behind the fastest.` },
+      ` Average delivery time runs from ${lo.toFixed(2)} to ${hi.toFixed(2)} days across all six regions. `,
+      `No region has a carrier problem. Individual orders still take anywhere from ${fastest} to ${slowest} days.`,
+    ],
+  });
+
+  const chart = chartCard("Average delivery time by region", "Days from order to delivery. The axis starts at zero.");
+  const sorted = [...byRegion].sort((a, b) => a.region.localeCompare(b.region));
+  mount(chart.host, (host, width) => barChart(host, width, {
+    data: sorted.map((r) => ({ label: r.region, value: r.avg_delivery_days })),
+    max: 7,
+    format: (v) => v.toFixed(2),
+    allAccent: true,
+    refLine: { value: overall, label: `All regions: ${overall.toFixed(2)}` },
+    ariaLabel: "Bar chart of average delivery days by region. Every region is about 5 days.",
+  }));
+  section.appendChild(chart.card);
+
+  section.appendChild(recommendations(
+    [
+      { text: "Promote consistent global delivery as a selling point. Customers get the same speed wherever they are." },
+      { text: "Do not open local warehouses to fix delivery speed. No region is slower, so there is no gap to close. Judge them on cost and returns instead." },
+    ],
+    "Averages hide spread. Orders take 1 to 9 days, and the data has no carrier field to explain why.",
+  ));
+  section.appendChild(tableView(
+    ["Region", "Average delivery days"],
+    sorted.map((r) => [r.region, r.avg_delivery_days.toFixed(2)]),
+  ));
+  return section;
+}
+
 // --- boot ------------------------------------------------------------------
 
 async function main() {
   initThemeToggle();
   try {
-    const [yearly, monthly, drivers, byCategory, byRegionCategory] = await Promise.all([
+    const [yearly, monthly, drivers, byCategory, byRegionCategory, byRegion, byDays, correlation] = await Promise.all([
       loadJson("yearly_kpis"), loadJson("monthly_kpis"), loadJson("monthly_drivers"),
       loadJson("return_rate_by_category"), loadJson("return_rate_by_category_region"),
+      loadJson("avg_delivery_by_region"), loadJson("csat_by_delivery_days"), loadJson("csat_delivery_correlation"),
     ]);
     renderKpis(yearly, monthly);
     const story = document.getElementById("story");
     story.appendChild(novemberSection(monthly, drivers));
     story.appendChild(fashionSection(byCategory, byRegionCategory));
+    story.appendChild(deliverySection(byRegion, byDays));
   } catch (err) {
     const box = el("div", { class: "error" }, `The data did not load. ${err.message}`);
     document.getElementById("kpi-strip").replaceWith(box);
