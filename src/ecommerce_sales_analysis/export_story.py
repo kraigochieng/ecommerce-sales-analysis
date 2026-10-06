@@ -12,6 +12,7 @@ OUTPUT_DIR = Path(__file__).resolve().parents[2] / "site" / "data"
 # One JSON file per dataset the story page needs: file name -> SQL query.
 EXPORTS = {
     "monthly_kpis": q.MONTHLY_KPIS_QUERY,
+    "yearly_kpis": q.YEARLY_KPIS_QUERY,
     "return_rate_by_category": q.RETURN_RATE_BY_CAT_TOTAL_QUERY,
     "return_rate_by_category_monthly": q.RETURN_RATE_BY_CAT_QUERY,
     "avg_delivery_by_region": q.AVG_DELIVERY_BY_REGION_QUERY,

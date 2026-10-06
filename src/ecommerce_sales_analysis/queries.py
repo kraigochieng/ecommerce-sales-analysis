@@ -56,6 +56,20 @@ MONTHLY_KPIS_QUERY = """
     ORDER BY order_date_year_month ASC;
 """
 
+YEARLY_KPIS_QUERY = """
+    SELECT
+        SUBSTR(order_date_year_month, 1, 4) AS year,
+        SUM(revenue) AS net_revenue,
+        COUNT(*) AS order_count,
+        ROUND(AVG(revenue), 2) AS aov,
+        ROUND((CAST(SUM(is_returned) AS REAL) / COUNT(*)) * 100, 2) AS return_rate,
+        ROUND(AVG(delivery_days), 2) AS avg_delivery_days,
+        ROUND(AVG(customer_rating), 2) AS csat
+    FROM orders_cleaned
+    GROUP BY year
+    ORDER BY year ASC;
+"""
+
 RETURN_RATE_BY_REGION_QUERY = """
     SELECT
         order_date_year_month,
