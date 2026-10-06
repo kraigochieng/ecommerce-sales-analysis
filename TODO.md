@@ -1,16 +1,9 @@
 -   [x] import csv to sevalla postgres db
-        = [ ] how to decide what should be on dashboard
--   [ ] decide on the graphs, cards and tables
-    -   what is in the graphs
-    -   what type of graph
 -   [x] cleaning
 -   [x] eda
 -   [x] warehousing
-    -   will do later
--   [x] use looker studio fo bi
-    -   using streamlit
 -   [x] create repository
--   [ ] storytelling
 -   [x] dashboard design
--   [ ] add images to readme
--   [ ] organise the dashboard better
+-   [x] storytelling: insights live next to their charts on the story page
+-   [x] replace the Streamlit dashboard with a static story page on GitHub Pages
+-   [ ] remove unused queries left from the Streamlit dashboard (`DYNAMIC_KPI_SQL`, star-schema helpers) or use the star schema
