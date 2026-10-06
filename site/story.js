@@ -1,5 +1,5 @@
 import { el, svgEl } from "./dom.js";
-import { barChart, lineChart, mount, tableView } from "./charts.js";
+import { barChart, lineChart, mount, redrawAll, tableView } from "./charts.js";
 
 const FLAT_THRESHOLD_PCT = 1;
 
@@ -176,18 +176,35 @@ function chips(items) {
   return row;
 }
 
-function recommendations(items, caveat) {
-  const frag = document.createDocumentFragment();
-  frag.appendChild(el("p", { class: "recs-title" }, "What to do"));
-  const list = el("ul", { class: "recs" });
-  for (const item of items) {
-    const li = el("li", item.test ? { class: "test" } : {});
-    li.textContent = item.test ? `To test: ${item.text}` : item.text;
-    list.appendChild(li);
+// The evidence behind a finding sits in an accordion. Returns the element
+// that holds the accordion's content.
+function deepDive(section) {
+  const details = el("details", { class: "dig" });
+  details.appendChild(el("summary", {}, "Show the charts and evidence"));
+  const body = el("div", { class: "dig-body" });
+  details.appendChild(body);
+  details.addEventListener("toggle", () => { if (details.open) redrawAll(); });
+  section.appendChild(details);
+  return body;
+}
+
+// The first recommendation stays visible above the accordion. The rest and
+// the caveat go inside it.
+function recommendations(section, more, items, caveat) {
+  const [first, ...rest] = items;
+  section.insertBefore(paragraph("action", [{ b: "Do this first: " }, first.text]), more.parentElement);
+
+  if (rest.length) {
+    more.appendChild(el("p", { class: "recs-title" }, "Also"));
+    const list = el("ul", { class: "recs" });
+    for (const item of rest) {
+      const li = el("li", item.test ? { class: "test" } : {});
+      li.textContent = item.test ? `To test: ${item.text}` : item.text;
+      list.appendChild(li);
+    }
+    more.appendChild(list);
   }
-  frag.appendChild(list);
-  if (caveat) frag.appendChild(el("p", { class: "caveat" }, caveat));
-  return frag;
+  if (caveat) more.appendChild(el("p", { class: "caveat" }, caveat));
 }
 
 // --- finding 1: November -----------------------------------------------------
@@ -215,6 +232,8 @@ function novemberSection(monthly, drivers) {
     ],
   });
 
+  const more = deepDive(section);
+
   const labels = monthly.map((r) => monthLabel(r.order_date_year_month));
   const xTicks = [0, 12, 24].map((i) => ({ index: i, label: labels[i].slice(4) }));
 
@@ -232,7 +251,7 @@ function novemberSection(monthly, drivers) {
     xTicks, height: 210,
     ariaLabel: "Line chart of monthly net revenue, 2023 to 2025. Revenue peaks every November.",
   }));
-  section.appendChild(rev.card);
+  more.appendChild(rev.card);
 
   const units = chartCard("Units per order by month", "Average quantity in each order. Highlighted: November.");
   mount(units.host, (host, width) => lineChart(host, width, {
@@ -248,28 +267,28 @@ function novemberSection(monthly, drivers) {
     xTicks, height: 190,
     ariaLabel: "Line chart of average units per order by month. It sits near 3 and rises to 4 every November.",
   }));
-  section.appendChild(units.card);
+  more.appendChild(units.card);
 
   const novOrders = mean(novs.map((d) => d.order_count));
   const restOrders = mean(rest.map((d) => d.order_count));
   const novDisc = mean(novs.map((d) => d.avg_discount_percent));
   const restDisc = mean(rest.map((d) => d.avg_discount_percent));
-  section.appendChild(chips([
+  more.appendChild(chips([
     { label: "Orders per month", value: Math.round(novOrders).toLocaleString("en-US"), compare: `November. Other months: ${Math.round(restOrders).toLocaleString("en-US")}` },
     { label: "Average discount", value: `${novDisc.toFixed(1)}%`, compare: `November. Other months: ${restDisc.toFixed(1)}%` },
     { label: "Units per order", value: novUnits.toFixed(1), compare: `November. Other months: ${restUnits.toFixed(1)}` },
   ]));
 
-  section.appendChild(recommendations(
+  recommendations(section, more,
     [
       { text: "Offer multi-unit bundles in November. Customers already add a unit per order, so bundles make that easy to do." },
       { text: `Set December targets against the dip, not against November. Revenue fell ${range(decDown)} after every November.` },
       { text: "gift cards and express shipping in December, aimed at last-minute shoppers. The data cannot show this behavior, so run it as an experiment.", test: true },
     ],
     "Each order holds one product type, so units per order means the quantity of that product.",
-  ));
+  );
 
-  section.appendChild(tableView(
+  more.appendChild(tableView(
     ["Month", "Net revenue", "Orders", "Units per order", "Average discount"],
     monthly.map((r, i) => [labels[i], `$${r.net_revenue.toLocaleString("en-US", { maximumFractionDigits: 0 })}`, drivers[i].order_count, drivers[i].avg_quantity, `${drivers[i].avg_discount_percent}%`]),
   ));
@@ -305,13 +324,15 @@ function fashionSection(byCategory, byRegionCategory) {
     ],
   });
 
+  const more = deepDive(section);
+
   const filters = el("div", { class: "filters" });
   const selectId = "fashion-region";
   filters.appendChild(el("label", { for: selectId }, "Region"));
   const select = el("select", { id: selectId });
   for (const name of ["All regions", ...regions]) select.appendChild(el("option", { value: name }, name));
   filters.appendChild(select);
-  section.appendChild(filters);
+  more.appendChild(filters);
 
   const chart = chartCard("Return rate by product category", "Share of orders returned. Fashion is highlighted.");
   const note = el("p", { class: "filter-note", "aria-live": "polite" });
@@ -346,16 +367,16 @@ function fashionSection(byCategory, byRegionCategory) {
   select.addEventListener("change", update);
   update();
 
-  section.appendChild(chart.card);
-  section.appendChild(recommendations(
+  more.appendChild(chart.card);
+  recommendations(section, more,
     [
       { text: "Add size guidance to Fashion listings: a sizing tool or \"true to fit\" reviews." },
       { text: "Show fabric close-ups and clear photos, so the product matches what customers expect." },
       { text: "a return-reason question at checkout for Fashion. Today nothing records why items come back.", test: true },
     ],
     "The data holds no return reasons. These actions target likely causes, not proven ones.",
-  ));
-  section.appendChild(tableSlot);
+  );
+  more.appendChild(tableSlot);
   return section;
 }
 
@@ -379,6 +400,8 @@ function deliverySection(byRegion, byDays) {
     ],
   });
 
+  const more = deepDive(section);
+
   const chart = chartCard("Average delivery time by region", "Days from order to delivery. The axis starts at zero.");
   const sorted = [...byRegion].sort((a, b) => a.region.localeCompare(b.region));
   mount(chart.host, (host, width) => barChart(host, width, {
@@ -389,16 +412,16 @@ function deliverySection(byRegion, byDays) {
     refLine: { value: overall, label: `All regions: ${overall.toFixed(2)}` },
     ariaLabel: "Bar chart of average delivery days by region. Every region is about 5 days.",
   }));
-  section.appendChild(chart.card);
+  more.appendChild(chart.card);
 
-  section.appendChild(recommendations(
+  recommendations(section, more,
     [
       { text: "Promote consistent global delivery as a selling point. Customers get the same speed wherever they are." },
       { text: "Do not open local warehouses to fix delivery speed. No region is slower, so there is no gap to close. Judge them on cost and returns instead." },
     ],
     "Averages hide spread. Orders take 1 to 9 days, and the data has no carrier field to explain why.",
-  ));
-  section.appendChild(tableView(
+  );
+  more.appendChild(tableView(
     ["Region", "Average delivery days"],
     sorted.map((r) => [r.region, r.avg_delivery_days.toFixed(2)]),
   ));
@@ -420,6 +443,8 @@ function csatSection(byDays, correlation) {
     ],
   });
 
+  const more = deepDive(section);
+
   const chart = chartCard("Average customer rating by delivery time", "Rating out of 5. The axis starts at zero.");
   mount(chart.host, (host, width) => lineChart(host, width, {
     data: byDays.map((r) => ({
@@ -437,16 +462,16 @@ function csatSection(byDays, correlation) {
     ariaLabel: "Line chart of average rating by delivery days. The line is flat at 3.5 from 1 day to 9 days.",
   }));
   chart.card.appendChild(el("p", { class: "axis-caption" }, "Delivery time (days)"));
-  section.appendChild(chart.card);
+  more.appendChild(chart.card);
 
-  section.appendChild(recommendations(
+  recommendations(section, more,
     [
       { text: "Pilot economy shipping on a share of orders. Customers do not reward speed, so the slower option should not hurt ratings." },
       { text: "Put the savings into quality control, starting with Fashion, where returns are highest." },
     ],
     "The data has no shipping cost, so the savings are not sized. Run the pilot and measure ratings and cost before a full switch.",
-  ));
-  section.appendChild(tableView(
+  );
+  more.appendChild(tableView(
     ["Delivery days", "Average rating", "Orders"],
     byDays.map((r) => [r.delivery_days, r.avg_rating.toFixed(2), r.order_count.toLocaleString("en-US")]),
   ));

@@ -8,6 +8,14 @@ const FONT = 'system-ui, -apple-system, "Segoe UI", sans-serif';
 
 // --- mounting --------------------------------------------------------------
 
+const mounted = new Set();
+
+// Charts inside a closed accordion have no width to measure. Call this when
+// one opens, so they draw at their real size.
+export function redrawAll() {
+  for (const run of mounted) run();
+}
+
 // Draws a chart at the width of its host and redraws when the host resizes.
 export function mount(host, draw) {
   let lastWidth = 0;
@@ -19,6 +27,7 @@ export function mount(host, draw) {
     draw(host, width);
   };
   new ResizeObserver(run).observe(host);
+  mounted.add(run);
   run();
   return { redraw() { lastWidth = 0; run(); } };
 }

@@ -29,6 +29,7 @@ The page in [site/](site/) is plain HTML, CSS and JavaScript with hand-written S
 
 -   `uv run export-story` ([export_story.py](src/ecommerce_sales_analysis/export_story.py)) runs `ensure_db()`, then writes the aggregates the page needs to `site/data/*.json`. Each JSON file comes from one query in `queries.py`.
 -   `site/data/` is gitignored. The [Pages workflow](.github/workflows/pages.yml) runs `uv run setup-db` and `uv run export-story` on every push to `main`, then publishes `site/`.
+-   Each finding shows its headline, insight and first recommendation, with the charts and evidence in a native `<details>` accordion. Charts cannot measure their width while closed, so opening a section calls `redrawAll()` in [charts.js](site/charts.js).
 -   The KPI strip compares full years (2025 vs 2024), not months. December always drops after the November spike, so a month-over-month change would mislead.
 
 ### Why the Streamlit dashboard was retired
