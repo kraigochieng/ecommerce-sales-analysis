@@ -13,6 +13,8 @@ OUTPUT_DIR = Path(__file__).resolve().parents[2] / "site" / "data"
 EXPORTS = {
     "monthly_kpis": q.MONTHLY_KPIS_QUERY,
     "yearly_kpis": q.YEARLY_KPIS_QUERY,
+    "monthly_drivers": q.MONTHLY_DRIVERS_QUERY,
+    "return_rate_by_category_region": q.RETURN_RATE_BY_CAT_REGION_QUERY,
     "return_rate_by_category": q.RETURN_RATE_BY_CAT_TOTAL_QUERY,
     "return_rate_by_category_monthly": q.RETURN_RATE_BY_CAT_QUERY,
     "avg_delivery_by_region": q.AVG_DELIVERY_BY_REGION_QUERY,
@@ -28,6 +30,15 @@ def write_json(name: str, df: pd.DataFrame) -> Path:
     return path
 
 
+def export_delivery_csat_correlation() -> Path:
+    """Pearson correlation between delivery days and rating, over all orders."""
+    df = pd.read_sql(q.DELIVERY_CSAT_RAW_QUERY, engine)
+    r = df["delivery_days"].corr(df["customer_rating"])
+    path = OUTPUT_DIR / "csat_delivery_correlation.json"
+    path.write_text(json.dumps({"r": round(float(r), 4), "order_count": len(df)}, indent=2) + "\n")
+    return path
+
+
 def main():
     ensure_db()
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
@@ -36,6 +47,8 @@ def main():
         df = pd.read_sql(query, engine)
         path = write_json(name, df)
         print(f"Wrote {len(df)} rows to {path}")
+
+    print(f"Wrote {export_delivery_csat_correlation()}")
 
 
 if __name__ == "__main__":
