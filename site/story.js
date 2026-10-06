@@ -405,6 +405,54 @@ function deliverySection(byRegion, byDays) {
   return section;
 }
 
+// --- finding 4: delivery speed vs rating --------------------------------------
+
+function csatSection(byDays, correlation) {
+  const rating = (d) => byDays.find((r) => r.delivery_days === d).avg_rating;
+  const first = byDays[0], last = byDays[byDays.length - 1];
+
+  const section = storySection({
+    num: 4,
+    title: "Faster delivery does not make customers happier.",
+    lede: [
+      { b: `Orders delivered in ${first.delivery_days} day rate ${rating(first.delivery_days).toFixed(1)} out of 5. Orders delivered in ${last.delivery_days} days rate ${rating(last.delivery_days).toFixed(1)}.` },
+      ` Across ${correlation.order_count.toLocaleString("en-US")} orders, the correlation between delivery time and rating is ${correlation.r}. A value of 0 means no relationship.`,
+    ],
+  });
+
+  const chart = chartCard("Average customer rating by delivery time", "Rating out of 5. The axis starts at zero.");
+  mount(chart.host, (host, width) => lineChart(host, width, {
+    data: byDays.map((r) => ({
+      label: `${r.delivery_days} ${r.delivery_days === 1 ? "day" : "days"} · ${r.order_count.toLocaleString("en-US")} orders`,
+      value: r.avg_rating,
+      tag: r.delivery_days === first.delivery_days || r.delivery_days === last.delivery_days ? r.avg_rating.toFixed(2) : undefined,
+    })),
+    highlight: new Set([0, byDays.length - 1]),
+    lineColor: "var(--accent)",
+    yMin: 0, yMax: 5, yTicks: [0, 1, 2, 3, 4, 5],
+    yFormat: (v) => v.toFixed(0),
+    valueFormat: (v) => `${v.toFixed(2)} / 5`,
+    xTicks: byDays.map((r, i) => ({ index: i, label: String(r.delivery_days) })),
+    height: 230,
+    ariaLabel: "Line chart of average rating by delivery days. The line is flat at 3.5 from 1 day to 9 days.",
+  }));
+  chart.card.appendChild(el("p", { class: "axis-caption" }, "Delivery time (days)"));
+  section.appendChild(chart.card);
+
+  section.appendChild(recommendations(
+    [
+      { text: "Pilot economy shipping on a share of orders. Customers do not reward speed, so the slower option should not hurt ratings." },
+      { text: "Put the savings into quality control, starting with Fashion, where returns are highest." },
+    ],
+    "The data has no shipping cost, so the savings are not sized. Run the pilot and measure ratings and cost before a full switch.",
+  ));
+  section.appendChild(tableView(
+    ["Delivery days", "Average rating", "Orders"],
+    byDays.map((r) => [r.delivery_days, r.avg_rating.toFixed(2), r.order_count.toLocaleString("en-US")]),
+  ));
+  return section;
+}
+
 // --- boot ------------------------------------------------------------------
 
 async function main() {
@@ -420,6 +468,7 @@ async function main() {
     story.appendChild(novemberSection(monthly, drivers));
     story.appendChild(fashionSection(byCategory, byRegionCategory));
     story.appendChild(deliverySection(byRegion, byDays));
+    story.appendChild(csatSection(byDays, correlation));
   } catch (err) {
     const box = el("div", { class: "error" }, `The data did not load. ${err.message}`);
     document.getElementById("kpi-strip").replaceWith(box);

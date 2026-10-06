@@ -204,3 +204,5 @@ h1 {
 .chip-compare { margin: 0; font-size: 13px; color: var(--ink-3); }
 
 .filter-note { margin: 8px 0 0; font-size: 13px; color: var(--ink-2); }
+
+.axis-caption { margin: 4px 0 0; text-align: center; font-size: 12px; color: var(--ink-3); }
