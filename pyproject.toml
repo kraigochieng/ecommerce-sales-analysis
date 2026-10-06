@@ -19,6 +19,7 @@ dependencies = [
 [project.scripts]
 ecommerce-sales-analysis = "ecommerce_sales_analysis:main"
 setup-db = "ecommerce_sales_analysis.setup_db:main"
+export-story = "ecommerce_sales_analysis.export_story:main"
 
 [build-system]
 requires = ["uv_build>=0.8.22,<0.9.0"]
