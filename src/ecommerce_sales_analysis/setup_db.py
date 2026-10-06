@@ -46,7 +46,7 @@ def load_orders_csv():
 
 
 def db_is_ready() -> bool:
-    """Whether the tables the app actually queries at runtime already exist."""
+    """Whether the tables the story export queries already exist."""
     inspector = inspect(engine)
     return inspector.has_table("orders_cleaned") and inspector.has_table(
         "monthly_kpis_with_mom"

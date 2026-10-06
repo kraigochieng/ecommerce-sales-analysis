@@ -6,4 +6,4 @@
 -   [x] dashboard design
 -   [x] storytelling: insights live next to their charts on the story page
 -   [x] replace the Streamlit dashboard with a static story page on GitHub Pages
--   [ ] remove unused queries left from the Streamlit dashboard (`DYNAMIC_KPI_SQL`, star-schema helpers) or use the star schema
+-   [x] remove unused queries left from the Streamlit dashboard
