@@ -105,6 +105,7 @@ h1 {
 }
 .theme-toggle:hover { background: var(--surface); }
 .theme-toggle:focus-visible,
+.kpi:hover { border-color: var(--axis); }
 .kpi:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 /* KPI strip */
@@ -231,3 +232,10 @@ h1 {
 .dig-body { padding: 4px 0 24px; }
 .dig-body > .recs-title:first-child { margin-top: 8px; }
 @media (prefers-reduced-motion: reduce) { .dig > summary::after { transition: none; } }
+
+/* Scorecards link to their finding */
+a.kpi { display: block; color: inherit; text-decoration: none; }
+.kpi-sowhat { margin: 8px 0 4px; font-size: 14px; color: var(--ink); }
+.kpi-link { font-size: 13px; color: var(--accent); }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
