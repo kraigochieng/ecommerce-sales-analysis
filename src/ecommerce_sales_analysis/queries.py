@@ -40,6 +40,22 @@ RETURN_RATE_BY_CAT_QUERY = """
     ORDER BY order_date_year_month ASC;
 """
 
+RETURN_RATE_BY_CAT_TOTAL_QUERY = """
+    SELECT
+        product_category,
+        ROUND((CAST(SUM(is_returned) AS REAL) / COUNT(*)) * 100, 2) AS return_rate,
+        COUNT(*) AS order_count
+    FROM orders_cleaned
+    GROUP BY product_category
+    ORDER BY return_rate DESC;
+"""
+
+MONTHLY_KPIS_QUERY = """
+    SELECT *
+    FROM monthly_kpis_with_mom
+    ORDER BY order_date_year_month ASC;
+"""
+
 RETURN_RATE_BY_REGION_QUERY = """
     SELECT
         order_date_year_month,

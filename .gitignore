@@ -15,3 +15,5 @@ wheels/
 # Local SQLite database
 *.db
 *.db-journal
+# Generated story data (built by `uv run export-story`)
+site/data/
