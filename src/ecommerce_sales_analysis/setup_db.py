@@ -56,8 +56,8 @@ def db_is_ready() -> bool:
 def ensure_db():
     """
     Builds the database if it isn't set up yet, otherwise does nothing.
-    Meant to be called on app startup (e.g. on a fresh Streamlit Cloud
-    container) so the db is built from the committed CSV on first run.
+    Meant to be called before exporting data (e.g. on a fresh CI runner)
+    so the db is built from the committed CSV on first run.
     """
     if db_is_ready():
         print("Database already set up, skipping.")
