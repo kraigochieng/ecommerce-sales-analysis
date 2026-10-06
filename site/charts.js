@@ -95,7 +95,9 @@ export function lineChart(host, width, o) {
     const d = o.data[i];
     svg.appendChild(svgEl("circle", { cx: x(i), cy: y(d.value), r: 5, fill: "var(--accent)", stroke: "var(--surface)", "stroke-width": 2 }));
     if (d.tag) {
-      text(svg, { x: x(i), y: y(d.value) - 12, "text-anchor": "middle", "font-size": 12, "font-weight": 600, fill: "var(--ink)" }, d.tag);
+      // Tags near the left or right edge grow inward, away from the axis labels.
+      const anchor = x(i) - m.l < 24 ? "start" : width - m.r - x(i) < 24 ? "end" : "middle";
+      text(svg, { x: x(i), y: y(d.value) - 12, "text-anchor": anchor, "font-size": 12, "font-weight": 600, fill: "var(--ink)" }, d.tag);
     }
   }
 
