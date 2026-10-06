@@ -147,11 +147,27 @@ function paragraph(className, parts) {
   return p;
 }
 
+// The accordion header is the finding plus the action. The insight paragraph
+// and everything else open inside.
 function storySection({ num, title, lede }) {
-  const section = el("section", { class: "story", "aria-labelledby": `story-${num}` });
-  section.appendChild(el("p", { class: "story-num" }, `Finding ${num} of 4`));
-  section.appendChild(el("h2", { id: `story-${num}` }, title));
-  section.appendChild(paragraph("story-lede", lede));
+  const section = el("section", { class: "story", id: `finding-${num}` });
+  const details = el("details", { class: "dig" });
+  const summary = el("summary");
+  summary.appendChild(el("span", { class: "story-num" }, `Finding ${num} of 4`));
+  summary.appendChild(el("h2", { id: `story-${num}` }, title));
+  summary.appendChild(el("span", { class: "dig-action" }));
+  const hint = el("span", { class: "dig-hint" });
+  hint.appendChild(el("span", { class: "hint-closed" }, "Show the evidence"));
+  hint.appendChild(el("span", { class: "hint-open" }, "Hide the evidence"));
+  summary.appendChild(hint);
+  details.appendChild(summary);
+
+  const body = el("div", { class: "dig-body" });
+  body.appendChild(paragraph("story-lede", lede));
+  details.appendChild(body);
+  details.addEventListener("toggle", () => { if (details.open) redrawAll(); });
+  section.appendChild(details);
+  section.setAttribute("aria-labelledby", `story-${num}`);
   return section;
 }
 
@@ -176,23 +192,16 @@ function chips(items) {
   return row;
 }
 
-// The evidence behind a finding sits in an accordion. Returns the element
-// that holds the accordion's content.
-function deepDive(section) {
-  const details = el("details", { class: "dig" });
-  details.appendChild(el("summary", {}, "Show the charts and evidence"));
-  const body = el("div", { class: "dig-body" });
-  details.appendChild(body);
-  details.addEventListener("toggle", () => { if (details.open) redrawAll(); });
-  section.appendChild(details);
-  return body;
-}
+// Returns the element that holds the accordion's content.
+const deepDive = (section) => section.querySelector(".dig-body");
 
-// The first recommendation stays visible above the accordion. The rest and
-// the caveat go inside it.
+// The first recommendation goes in the accordion header, next to the finding.
+// The rest and the caveat go inside.
 function recommendations(section, more, items, caveat) {
   const [first, ...rest] = items;
-  section.insertBefore(paragraph("action", [{ b: "Do this first: " }, first.text]), more.parentElement);
+  const action = section.querySelector(".dig-action");
+  action.appendChild(el("strong", {}, "Do this first: "));
+  action.appendChild(document.createTextNode(first.text));
 
   if (rest.length) {
     more.appendChild(el("p", { class: "recs-title" }, "Also"));
