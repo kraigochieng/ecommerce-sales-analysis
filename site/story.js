@@ -1,22 +1,8 @@
-"use strict";
+import { el, svgEl } from "./dom.js";
 
-const SVG_NS = "http://www.w3.org/2000/svg";
 const FLAT_THRESHOLD_PCT = 1;
 
 // --- helpers ---------------------------------------------------------------
-
-function el(tag, attrs = {}, text) {
-  const node = document.createElement(tag);
-  for (const [k, v] of Object.entries(attrs)) node.setAttribute(k, v);
-  if (text !== undefined) node.textContent = text;
-  return node;
-}
-
-function svgEl(tag, attrs = {}) {
-  const node = document.createElementNS(SVG_NS, tag);
-  for (const [k, v] of Object.entries(attrs)) node.setAttribute(k, v);
-  return node;
-}
 
 async function loadJson(name) {
   const res = await fetch(`data/${name}.json`);
