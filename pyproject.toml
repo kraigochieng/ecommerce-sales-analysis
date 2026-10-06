@@ -1,19 +1,17 @@
 [project]
 name = "ecommerce-sales-analysis"
 version = "0.1.0"
-description = "Optimizing global e-commerce operations through deep-dive analysis of revenue, returns, and shipping efficiency. Powered by Python, Streamlit, and PostgreSQL"
+description = "Optimizing global e-commerce operations through deep-dive analysis of revenue, returns, and shipping efficiency. Powered by Python and SQLite, published as a static data-story page"
 readme = "README.md"
 authors = [{ name = "kraigochieng", email = "kraigochieng@gmail.com" }]
 requires-python = ">=3.11"
 dependencies = [
     "pandas>=2.3.3",
-    "plotly>=6.5.0",
     # "psycopg2-binary>=2.9.11",
     "pydantic>=2.12.5",
     "pydantic-settings>=2.12.0",
     "python-dotenv>=1.2.1",
     "sqlalchemy>=2.0.44",
-    "streamlit>=1.51.0",
 ]
 
 [project.scripts]

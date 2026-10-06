@@ -14,8 +14,8 @@ Originally used a hosted Postgres instance (Sevalla). Migrated to SQLite so the 
 
 ### Two schema paths — only one is live
 
--   **`orders` → `orders_cleaned` → `monthly_kpis_with_mom`** (raw SQL: `ddl.sql` → `cleaning.sql` → `eda.sql`) — this is what [data_loader.py](src/ecommerce_sales_analysis/data_loader.py) / [queries.py](src/ecommerce_sales_analysis/queries.py) actually query. This is the live path.
--   **Star schema** (`dim_region`, `dim_product`, `dim_customer`, `dim_date`, `fact_order` — defined in [db/models.py](src/ecommerce_sales_analysis/db/models.py), populated by `etl.sql`) — built and kept in sync, but `app.py` doesn't query it yet. `queries.py` has `get_dynamic_kpi_query()` / `fetch_kpi_data_star_schema()` ready to go if/when the UI switches over.
+-   **`orders` → `orders_cleaned` → `monthly_kpis_with_mom`** (raw SQL: `ddl.sql` → `cleaning.sql` → `eda.sql`) — this is what [export_story.py](src/ecommerce_sales_analysis/export_story.py) / [queries.py](src/ecommerce_sales_analysis/queries.py) actually query. This is the live path.
+-   **Star schema** (`dim_region`, `dim_product`, `dim_customer`, `dim_date`, `fact_order` — defined in [db/models.py](src/ecommerce_sales_analysis/db/models.py), populated by `etl.sql`) — built and kept in sync, but nothing queries it yet. `queries.py` still has `get_dynamic_kpi_query()` for it, left from the Streamlit dashboard.
 
 ### Setup is now one command: `uv run setup-db`
 
@@ -23,13 +23,16 @@ Originally used a hosted Postgres instance (Sevalla). Migrated to SQLite so the 
 
 Previously each `.sql` file had to be run by hand against the db (`sqlite3 db < sql/whatever.sql`); nothing in the codebase invoked them.
 
-### Deployment: build-on-cold-start, not a committed binary
+### Delivery: a static story page on GitHub Pages
 
-For Streamlit Cloud, the alternative to shipping a prebuilt `.db` file (which would mean committing a large binary that grows the repo on every rebuild) is having the app build its own database from the CSV that's already tracked in git.
+The page in [site/](site/) is plain HTML, CSS and JavaScript with hand-written SVG charts (see [charts.js](site/charts.js)). It has no server and no build step for the front end.
 
-`app.py` calls `ensure_db()` on startup, wrapped in `@st.cache_resource` so it runs once per container:
+-   `uv run export-story` ([export_story.py](src/ecommerce_sales_analysis/export_story.py)) runs `ensure_db()`, then writes the aggregates the page needs to `site/data/*.json`. Each JSON file comes from one query in `queries.py`.
+-   `site/data/` is gitignored. The [Pages workflow](.github/workflows/pages.yml) runs `uv run setup-db` and `uv run export-story` on every push to `main`, then publishes `site/`.
+-   The KPI strip compares full years (2025 vs 2024), not months. December always drops after the November spike, so a month-over-month change would mislead.
 
--   Fresh container → tables don't exist → full `setup-db` pipeline runs (a few seconds) → cached for the container's lifetime.
--   Any rerun after that → tables already exist → no-op.
+### Why the Streamlit dashboard was retired
 
-`*.db` files are gitignored; the only thing that needs to be committed is the source CSV (already tracked) and the SQL/Python that builds the db from it.
+The first version was a Streamlit app on Streamlit Cloud. The insights lived apart from the charts, in README text and static screenshots, and the two could drift apart. Streamlit also limited layout and annotation control, and it needed a server that rebuilt the database on every cold start.
+
+The data is fixed (100,000 orders), so the story page replaces it: each chart carries its own headline, annotations and recommendation. The last commit with the dashboard is tagged [`v0.1.0-streamlit`](https://github.com/kraigochieng/ecommerce-sales-analysis/tree/v0.1.0-streamlit). Check out that tag to run it.
