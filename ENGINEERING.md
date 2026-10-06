@@ -15,7 +15,7 @@ Originally used a hosted Postgres instance (Sevalla). Migrated to SQLite so the 
 ### Two schema paths — only one is live
 
 -   **`orders` → `orders_cleaned` → `monthly_kpis_with_mom`** (raw SQL: `ddl.sql` → `cleaning.sql` → `eda.sql`) — this is what [export_story.py](src/ecommerce_sales_analysis/export_story.py) / [queries.py](src/ecommerce_sales_analysis/queries.py) actually query. This is the live path.
--   **Star schema** (`dim_region`, `dim_product`, `dim_customer`, `dim_date`, `fact_order` — defined in [db/models.py](src/ecommerce_sales_analysis/db/models.py), populated by `etl.sql`) — built and kept in sync, but nothing queries it yet. `queries.py` still has `get_dynamic_kpi_query()` for it, left from the Streamlit dashboard.
+-   **Star schema** (`dim_region`, `dim_product`, `dim_customer`, `dim_date`, `fact_order` — defined in [db/models.py](src/ecommerce_sales_analysis/db/models.py), populated by `etl.sql`) — built and kept in sync, but nothing queries it yet. The helper that queried it was removed with the Streamlit dashboard; it is in git history (tag `v0.1.0-streamlit`) if the page ever needs the star schema.
 
 ### Setup is now one command: `uv run setup-db`
 
