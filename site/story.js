@@ -276,16 +276,102 @@ function novemberSection(monthly, drivers) {
   return section;
 }
 
+// --- finding 2: Fashion returns ----------------------------------------------
+
+function fashionSection(byCategory, byRegionCategory) {
+  const regions = [...new Set(byRegionCategory.map((r) => r.region))].sort();
+  const pct = (v) => `${v.toFixed(1)}%`;
+
+  // Order-weighted return rate of every category except Fashion.
+  const othersRate = (rows) => {
+    const others = rows.filter((r) => r.product_category !== "Fashion");
+    const orders = others.reduce((a, r) => a + r.order_count, 0);
+    return others.reduce((a, r) => a + r.return_rate * r.order_count, 0) / orders;
+  };
+  const fashionRate = (rows) => rows.find((r) => r.product_category === "Fashion").return_rate;
+
+  const overallMultiple = fashionRate(byCategory) / othersRate(byCategory);
+  const otherRates = byCategory.filter((r) => r.product_category !== "Fashion").map((r) => r.return_rate);
+  const fashionByRegion = regions.map((reg) => fashionRate(byRegionCategory.filter((r) => r.region === reg)));
+
+  const section = storySection({
+    num: 2,
+    title: `Fashion orders come back ${overallMultiple.toFixed(1)} times as often as any other category.`,
+    lede: [
+      { b: `${pct(fashionRate(byCategory))} of Fashion orders are returned.` },
+      ` Every other category sits between ${pct(Math.min(...otherRates))} and ${pct(Math.max(...otherRates))}. `,
+      `The gap holds in every region (Fashion: ${pct(Math.min(...fashionByRegion))} to ${pct(Math.max(...fashionByRegion))}), `,
+      "so this is a product problem, not a regional one.",
+    ],
+  });
+
+  const filters = el("div", { class: "filters" });
+  const selectId = "fashion-region";
+  filters.appendChild(el("label", { for: selectId }, "Region"));
+  const select = el("select", { id: selectId });
+  for (const name of ["All regions", ...regions]) select.appendChild(el("option", { value: name }, name));
+  filters.appendChild(select);
+  section.appendChild(filters);
+
+  const chart = chartCard("Return rate by product category", "Share of orders returned. Fashion is highlighted.");
+  const note = el("p", { class: "filter-note", "aria-live": "polite" });
+  chart.card.appendChild(note);
+  const tableSlot = el("div");
+
+  let rows = byCategory;
+  const view = mount(chart.host, (host, width) => barChart(host, width, {
+    data: [...rows].sort((a, b) => b.return_rate - a.return_rate).map((r) => ({
+      label: r.product_category,
+      value: r.return_rate,
+      highlight: r.product_category === "Fashion",
+      detail: `${r.order_count.toLocaleString("en-US")} orders`,
+    })),
+    max: 15,
+    format: pct,
+    refLine: { value: othersRate(rows), label: `Other categories: ${pct(othersRate(rows))}` },
+    ariaLabel: "Bar chart of return rate by product category. Fashion is about 12 percent. The others are about 5 percent.",
+  }));
+
+  const update = () => {
+    const region = select.value;
+    rows = region === "All regions" ? byCategory : byRegionCategory.filter((r) => r.region === region);
+    const f = fashionRate(rows), o = othersRate(rows);
+    note.textContent = `${region}: Fashion ${pct(f)}, other categories ${pct(o)}. Fashion returns ${(f / o).toFixed(1)} times as often.`;
+    view.redraw();
+    tableSlot.replaceChildren(tableView(
+      ["Category", "Return rate", "Orders"],
+      [...rows].sort((a, b) => b.return_rate - a.return_rate).map((r) => [r.product_category, pct(r.return_rate), r.order_count.toLocaleString("en-US")]),
+    ));
+  };
+  select.addEventListener("change", update);
+  update();
+
+  section.appendChild(chart.card);
+  section.appendChild(recommendations(
+    [
+      { text: "Add size guidance to Fashion listings: a sizing tool or \"true to fit\" reviews." },
+      { text: "Show fabric close-ups and clear photos, so the product matches what customers expect." },
+      { text: "a return-reason question at checkout for Fashion. Today nothing records why items come back.", test: true },
+    ],
+    "The data holds no return reasons. These actions target likely causes, not proven ones.",
+  ));
+  section.appendChild(tableSlot);
+  return section;
+}
+
 // --- boot ------------------------------------------------------------------
 
 async function main() {
   initThemeToggle();
   try {
-    const [yearly, monthly, drivers] = await Promise.all([
+    const [yearly, monthly, drivers, byCategory, byRegionCategory] = await Promise.all([
       loadJson("yearly_kpis"), loadJson("monthly_kpis"), loadJson("monthly_drivers"),
+      loadJson("return_rate_by_category"), loadJson("return_rate_by_category_region"),
     ]);
     renderKpis(yearly, monthly);
-    document.getElementById("story").appendChild(novemberSection(monthly, drivers));
+    const story = document.getElementById("story");
+    story.appendChild(novemberSection(monthly, drivers));
+    story.appendChild(fashionSection(byCategory, byRegionCategory));
   } catch (err) {
     const box = el("div", { class: "error" }, `The data did not load. ${err.message}`);
     document.getElementById("kpi-strip").replaceWith(box);
