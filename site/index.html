@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Jumbo Global Operations</title>
+  <meta name="description" content="A data story on Jumbo's global e-commerce operations: revenue, returns, delivery and customer satisfaction, 2023 to 2025.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="masthead">
+    <div class="wrap">
+      <div class="masthead-row">
+        <p class="eyebrow">Jumbo · Global Operations · 2023–2025</p>
+        <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Switch color theme">Theme</button>
+      </div>
+      <h1>A flat year, with one loud month.</h1>
+      <p class="lede">Jumbo shipped 100,000 orders over three years. Almost every number held steady. Four things did not, and each one points to an action.</p>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section aria-labelledby="kpi-heading">
+      <h2 id="kpi-heading" class="section-label">2025 at a glance <span id="kpi-compare" class="muted"></span></h2>
+      <div id="kpi-strip" class="kpi-strip" role="list"></div>
+      <p class="note">Sparklines show the 12 months of 2025. Changes compare full-year 2025 with full-year 2024. A change under 1% counts as flat.</p>
+    </section>
+
+    <div id="story"></div>
+  </main>
+
+  <footer class="wrap footer">
+    <p>Source: synthetic e-commerce sales data, 100,000 orders. Built with SQLite and Python. <a href="https://github.com/kraigochieng/ecommerce-sales-analysis">Code on GitHub</a>.</p>
+  </footer>
+
+  <script src="story.js"></script>
+</body>
+</html>
