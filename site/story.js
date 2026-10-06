@@ -81,8 +81,8 @@ function endDot(values) {
   return dot;
 }
 
-function kpiTile({ label, value, delta, upIsGood, series, compareYear }) {
-  const tile = el("div", { class: "kpi", role: "listitem" });
+function kpiTile({ label, value, delta, upIsGood, series, compareYear, sowhat, finding }) {
+  const tile = el("a", { class: "kpi", role: "listitem", href: `#finding-${finding}` });
   tile.appendChild(el("p", { class: "kpi-label" }, label));
   tile.appendChild(el("p", { class: "kpi-value" }, value));
 
@@ -100,23 +100,26 @@ function kpiTile({ label, value, delta, upIsGood, series, compareYear }) {
   frame.appendChild(sparkline(series));
   frame.appendChild(endDot(series));
   tile.appendChild(frame);
+  tile.appendChild(el("p", { class: "kpi-sowhat" }, sowhat));
+  tile.appendChild(el("span", { class: "kpi-link" }, `See finding ${finding} →`));
   return tile;
 }
 
-function renderKpis(yearly, monthly) {
+function renderKpis(yearly, monthly, byCategory) {
   const now = yearly[yearly.length - 1];
   const before = yearly[yearly.length - 2];
   const last12 = monthly.slice(-12);
   const col = (key) => last12.map((r) => r[key]);
 
   document.getElementById("kpi-compare").textContent = `· vs ${before.year}`;
+  const fashion = byCategory.find((r) => r.product_category === "Fashion").return_rate;
 
   const tiles = [
-    { label: "Net revenue", value: `$${compact(now.net_revenue)}`, key: "net_revenue", field: "net_revenue", upIsGood: true },
-    { label: "Average order value", value: `$${now.aov.toFixed(0)}`, key: "aov", field: "aov", upIsGood: true },
-    { label: "Return rate", value: `${now.return_rate.toFixed(1)}%`, key: "return_rate", field: "return_rate", upIsGood: false },
-    { label: "Delivery time", value: `${now.avg_delivery_days.toFixed(1)} days`, key: "avg_delivery_days", field: "avg_delivery_days", upIsGood: false },
-    { label: "Customer rating", value: `${now.csat.toFixed(1)} / 5`, key: "csat", field: "csat", upIsGood: true },
+    { label: "Net revenue", value: `$${compact(now.net_revenue)}`, key: "net_revenue", field: "net_revenue", upIsGood: true, finding: 1, sowhat: "A flat year, except every November." },
+    { label: "Average order value", value: `$${now.aov.toFixed(0)}`, key: "aov", field: "aov", upIsGood: true, finding: 1, sowhat: "Steady, but it jumps every November." },
+    { label: "Return rate", value: `${now.return_rate.toFixed(1)}%`, key: "return_rate", field: "return_rate", upIsGood: false, finding: 2, sowhat: `Looks fine overall. Fashion alone is ${fashion.toFixed(1)}%.` },
+    { label: "Delivery time", value: `${now.avg_delivery_days.toFixed(1)} days`, key: "avg_delivery_days", field: "avg_delivery_days", upIsGood: false, finding: 3, sowhat: "The same in every region." },
+    { label: "Customer rating", value: `${now.csat.toFixed(1)} / 5`, key: "csat", field: "csat", upIsGood: true, finding: 4, sowhat: "Faster delivery does not lift it." },
   ];
 
   const strip = document.getElementById("kpi-strip");
@@ -128,6 +131,8 @@ function renderKpis(yearly, monthly) {
       upIsGood: t.upIsGood,
       series: col(t.key),
       compareYear: before.year,
+      sowhat: t.sowhat,
+      finding: t.finding,
     }));
   }
 }
@@ -489,20 +494,29 @@ function csatSection(byDays, correlation) {
 
 // --- boot ------------------------------------------------------------------
 
+// A link to a finding (e.g. from a scorecard) opens its accordion.
+function openLinkedFinding() {
+  const target = location.hash && document.querySelector(location.hash);
+  const details = target && target.querySelector("details.dig");
+  if (details) details.open = true;
+}
+
 async function main() {
   initThemeToggle();
+  window.addEventListener("hashchange", openLinkedFinding);
   try {
     const [yearly, monthly, drivers, byCategory, byRegionCategory, byRegion, byDays, correlation] = await Promise.all([
       loadJson("yearly_kpis"), loadJson("monthly_kpis"), loadJson("monthly_drivers"),
       loadJson("return_rate_by_category"), loadJson("return_rate_by_category_region"),
       loadJson("avg_delivery_by_region"), loadJson("csat_by_delivery_days"), loadJson("csat_delivery_correlation"),
     ]);
-    renderKpis(yearly, monthly);
+    renderKpis(yearly, monthly, byCategory);
     const story = document.getElementById("story");
     story.appendChild(novemberSection(monthly, drivers));
     story.appendChild(fashionSection(byCategory, byRegionCategory));
     story.appendChild(deliverySection(byRegion, byDays));
     story.appendChild(csatSection(byDays, correlation));
+    openLinkedFinding();
   } catch (err) {
     const box = el("div", { class: "error" }, `The data did not load. ${err.message}`);
     document.getElementById("kpi-strip").replaceWith(box);
