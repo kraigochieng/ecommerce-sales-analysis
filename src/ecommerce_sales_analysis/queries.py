@@ -70,6 +70,33 @@ YEARLY_KPIS_QUERY = """
     ORDER BY year ASC;
 """
 
+MONTHLY_DRIVERS_QUERY = """
+    SELECT
+        order_date_year_month,
+        COUNT(*) AS order_count,
+        ROUND(AVG(quantity), 2) AS avg_quantity,
+        ROUND(AVG(discount_percent), 2) AS avg_discount_percent
+    FROM orders_cleaned
+    GROUP BY order_date_year_month
+    ORDER BY order_date_year_month ASC;
+"""
+
+RETURN_RATE_BY_CAT_REGION_QUERY = """
+    SELECT
+        region,
+        product_category,
+        ROUND((CAST(SUM(is_returned) AS REAL) / COUNT(*)) * 100, 2) AS return_rate,
+        COUNT(*) AS order_count
+    FROM orders_cleaned
+    GROUP BY region, product_category
+    ORDER BY region ASC, return_rate DESC;
+"""
+
+DELIVERY_CSAT_RAW_QUERY = """
+    SELECT delivery_days, customer_rating
+    FROM orders_cleaned;
+"""
+
 RETURN_RATE_BY_REGION_QUERY = """
     SELECT
         order_date_year_month,
@@ -116,7 +143,7 @@ CSAT_DELIVERY_AGG_QUERY = """
 AVG_DELIVERY_BY_REGION_QUERY = """
     SELECT 
         region, 
-        ROUND(AVG(delivery_days), 1) as avg_delivery_days
+        ROUND(AVG(delivery_days), 2) as avg_delivery_days
     FROM orders_cleaned
     GROUP BY region
     ORDER BY avg_delivery_days DESC;

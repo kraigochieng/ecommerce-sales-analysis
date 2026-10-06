@@ -27,12 +27,25 @@
     </section>
 
     <div id="story"></div>
+
+    <section class="caveats" aria-labelledby="caveats-heading">
+      <h2 id="caveats-heading" class="section-label">Caveats and assumptions</h2>
+      <ul>
+        <li><strong>One item per order.</strong> Each order holds one product type, so there is no basket or cross-sell analysis.</li>
+        <li><strong>No repeat customers.</strong> Each customer ID appears once, so lifetime value and retention cannot be measured.</li>
+        <li><strong>Revenue only.</strong> Cost of goods and shipping costs are missing, so the analysis covers top-line revenue, not profit.</li>
+        <li><strong>Broad categories.</strong> Products are grouped into categories such as Fashion, which hides differences between single products.</li>
+        <li><strong>Returns are yes or no.</strong> There are no return reasons or return dates.</li>
+        <li><strong>One currency.</strong> All values are assumed to be in a single currency, with no exchange-rate effects.</li>
+        <li><strong>Delivery in calendar days.</strong> Delivery time counts calendar days from order to delivery.</li>
+      </ul>
+    </section>
   </main>
 
   <footer class="wrap footer">
     <p>Source: synthetic e-commerce sales data, 100,000 orders. Built with SQLite and Python. <a href="https://github.com/kraigochieng/ecommerce-sales-analysis">Code on GitHub</a>.</p>
   </footer>
 
-  <script src="story.js"></script>
+  <script type="module" src="story.js"></script>
 </body>
 </html>
