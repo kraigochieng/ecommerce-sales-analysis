@@ -1,4 +1,5 @@
 import { el, svgEl } from "./dom.js";
+import { barChart, lineChart, mount, tableView } from "./charts.js";
 
 const FLAT_THRESHOLD_PCT = 1;
 
@@ -131,13 +132,160 @@ function renderKpis(yearly, monthly) {
   }
 }
 
+// --- story building blocks -------------------------------------------------
+
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const monthLabel = (ym) => `${MONTHS[Number(ym.slice(5)) - 1]} ${ym.slice(0, 4)}`;
+const mean = (xs) => xs.reduce((a, b) => a + b, 0) / xs.length;
+
+// parts: plain strings, or { b: "text" } for bold text.
+function paragraph(className, parts) {
+  const p = el("p", { class: className });
+  for (const part of parts) {
+    p.append(typeof part === "string" ? document.createTextNode(part) : el("strong", {}, part.b));
+  }
+  return p;
+}
+
+function storySection({ num, title, lede }) {
+  const section = el("section", { class: "story", "aria-labelledby": `story-${num}` });
+  section.appendChild(el("p", { class: "story-num" }, `Finding ${num} of 4`));
+  section.appendChild(el("h2", { id: `story-${num}` }, title));
+  section.appendChild(paragraph("story-lede", lede));
+  return section;
+}
+
+function chartCard(title, subtitle) {
+  const card = el("figure", { class: "card" });
+  card.appendChild(el("p", { class: "chart-title" }, title));
+  card.appendChild(el("p", { class: "chart-sub" }, subtitle));
+  const host = el("div", { class: "chart-host" });
+  card.appendChild(host);
+  return { card, host };
+}
+
+function chips(items) {
+  const row = el("div", { class: "chips" });
+  for (const item of items) {
+    const chip = el("div", { class: "chip" });
+    chip.appendChild(el("p", { class: "chip-label" }, item.label));
+    chip.appendChild(el("p", { class: "chip-value" }, item.value));
+    chip.appendChild(el("p", { class: "chip-compare" }, item.compare));
+    row.appendChild(chip);
+  }
+  return row;
+}
+
+function recommendations(items, caveat) {
+  const frag = document.createDocumentFragment();
+  frag.appendChild(el("p", { class: "recs-title" }, "What to do"));
+  const list = el("ul", { class: "recs" });
+  for (const item of items) {
+    const li = el("li", item.test ? { class: "test" } : {});
+    li.textContent = item.test ? `To test: ${item.text}` : item.text;
+    list.appendChild(li);
+  }
+  frag.appendChild(list);
+  if (caveat) frag.appendChild(el("p", { class: "caveat" }, caveat));
+  return frag;
+}
+
+// --- finding 1: November -----------------------------------------------------
+
+function novemberSection(monthly, drivers) {
+  const novIdx = monthly.map((r, i) => (r.order_date_year_month.endsWith("-11") ? i : -1)).filter((i) => i >= 0);
+  const novUp = novIdx.map((i) => monthly[i].mom_revenue_pct);
+  const decDown = novIdx.map((i) => monthly[i + 1].mom_revenue_pct).map((v) => -v);
+  const range = (xs) => `${Math.round(Math.min(...xs))}–${Math.round(Math.max(...xs))}%`;
+
+  const isNov = (d) => d.order_date_year_month.endsWith("-11");
+  const rest = drivers.filter((d) => !isNov(d));
+  const novs = drivers.filter(isNov);
+  const novUnits = mean(novs.map((d) => d.avg_quantity));
+  const restUnits = mean(rest.map((d) => d.avg_quantity));
+
+  const section = storySection({
+    num: 1,
+    title: "Every November, one extra unit per order lifts revenue by about 20%.",
+    lede: [
+      "Net revenue jumps ", { b: range(novUp) }, " from October to November, in all three years. ",
+      "The cause is not more orders and not bigger discounts. Customers buy ",
+      { b: `${novUnits.toFixed(1)} units per order instead of ${restUnits.toFixed(1)}` },
+      ". Then revenue falls ", { b: range(decDown) }, " in December.",
+    ],
+  });
+
+  const labels = monthly.map((r) => monthLabel(r.order_date_year_month));
+  const xTicks = [0, 12, 24].map((i) => ({ index: i, label: labels[i].slice(4) }));
+
+  const rev = chartCard("Net revenue by month", "Millions of dollars. The axis starts at $1.5M.");
+  mount(rev.host, (host, width) => lineChart(host, width, {
+    data: monthly.map((r, i) => ({
+      label: labels[i],
+      value: r.net_revenue / 1e6,
+      tag: novIdx.includes(i) ? `+${r.mom_revenue_pct.toFixed(0)}%` : undefined,
+    })),
+    highlight: new Set(novIdx),
+    yMin: 1.5, yMax: 2.6, yTicks: [1.5, 2.0, 2.5],
+    yFormat: (v) => `$${v.toFixed(1)}M`,
+    valueFormat: (v) => `$${v.toFixed(2)}M`,
+    xTicks, height: 210,
+    ariaLabel: "Line chart of monthly net revenue, 2023 to 2025. Revenue peaks every November.",
+  }));
+  section.appendChild(rev.card);
+
+  const units = chartCard("Units per order by month", "Average quantity in each order. Highlighted: November.");
+  mount(units.host, (host, width) => lineChart(host, width, {
+    data: drivers.map((d, i) => ({
+      label: labels[i],
+      value: d.avg_quantity,
+      tag: novIdx.includes(i) ? d.avg_quantity.toFixed(1) : undefined,
+    })),
+    highlight: new Set(novIdx),
+    yMin: 2, yMax: 5, yTicks: [2, 3, 4, 5],
+    yFormat: (v) => v.toFixed(0),
+    valueFormat: (v) => `${v.toFixed(2)} units`,
+    xTicks, height: 190,
+    ariaLabel: "Line chart of average units per order by month. It sits near 3 and rises to 4 every November.",
+  }));
+  section.appendChild(units.card);
+
+  const novOrders = mean(novs.map((d) => d.order_count));
+  const restOrders = mean(rest.map((d) => d.order_count));
+  const novDisc = mean(novs.map((d) => d.avg_discount_percent));
+  const restDisc = mean(rest.map((d) => d.avg_discount_percent));
+  section.appendChild(chips([
+    { label: "Orders per month", value: Math.round(novOrders).toLocaleString("en-US"), compare: `November. Other months: ${Math.round(restOrders).toLocaleString("en-US")}` },
+    { label: "Average discount", value: `${novDisc.toFixed(1)}%`, compare: `November. Other months: ${restDisc.toFixed(1)}%` },
+    { label: "Units per order", value: novUnits.toFixed(1), compare: `November. Other months: ${restUnits.toFixed(1)}` },
+  ]));
+
+  section.appendChild(recommendations(
+    [
+      { text: "Offer multi-unit bundles in November. Customers already add a unit per order, so bundles make that easy to do." },
+      { text: `Set December targets against the dip, not against November. Revenue fell ${range(decDown)} after every November.` },
+      { text: "gift cards and express shipping in December, aimed at last-minute shoppers. The data cannot show this behavior, so run it as an experiment.", test: true },
+    ],
+    "Each order holds one product type, so units per order means the quantity of that product.",
+  ));
+
+  section.appendChild(tableView(
+    ["Month", "Net revenue", "Orders", "Units per order", "Average discount"],
+    monthly.map((r, i) => [labels[i], `$${r.net_revenue.toLocaleString("en-US", { maximumFractionDigits: 0 })}`, drivers[i].order_count, drivers[i].avg_quantity, `${drivers[i].avg_discount_percent}%`]),
+  ));
+  return section;
+}
+
 // --- boot ------------------------------------------------------------------
 
 async function main() {
   initThemeToggle();
   try {
-    const [yearly, monthly] = await Promise.all([loadJson("yearly_kpis"), loadJson("monthly_kpis")]);
+    const [yearly, monthly, drivers] = await Promise.all([
+      loadJson("yearly_kpis"), loadJson("monthly_kpis"), loadJson("monthly_drivers"),
+    ]);
     renderKpis(yearly, monthly);
+    document.getElementById("story").appendChild(novemberSection(monthly, drivers));
   } catch (err) {
     const box = el("div", { class: "error" }, `The data did not load. ${err.message}`);
     document.getElementById("kpi-strip").replaceWith(box);
