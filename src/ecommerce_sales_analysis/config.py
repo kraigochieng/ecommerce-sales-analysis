@@ -12,7 +12,11 @@ class Settings(BaseSettings):
     # DB_NAME: str
     DB_NAME: str = "ecommerce_analysis.db"
 
-    model_config = SettingsConfigDict(env_file=find_dotenv(), env_file_encoding="utf-8")
+    # The shared .env file also holds keys for other tools (for example the key for
+    # the ask panel tests). Ignore them, so a validation error never prints them.
+    model_config = SettingsConfigDict(
+        env_file=find_dotenv(), env_file_encoding="utf-8", extra="ignore"
+    )
 
     @computed_field
     @property
