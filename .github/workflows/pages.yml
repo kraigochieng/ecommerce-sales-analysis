@@ -23,10 +23,26 @@ jobs:
 
       - uses: astral-sh/setup-uv@v5
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install the exact locked packages and scan them for known vulnerabilities
+        run: |
+          npm ci
+          npm audit --audit-level=high
+
       - name: Build database and export story data
         run: |
           uv run setup-db
           uv run export-story
+
+      - name: Run the site tests
+        run: npm test
+
+      - name: Copy the DuckDB-WASM files into the site
+        run: npm run vendor
 
       - uses: actions/configure-pages@v5
 
