@@ -17,3 +17,7 @@ wheels/
 *.db-journal
 # Generated story data (built by `uv run export-story`)
 site/data/
+
+# Node tooling and the vendored DuckDB-WASM files (built by `npm run vendor`)
+node_modules/
+site/vendor/

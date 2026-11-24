@@ -1,0 +1,16 @@
+{
+  "name": "ecommerce-sales-analysis-site",
+  "private": true,
+  "type": "module",
+  "description": "Tooling for the story page: tests and the vendored DuckDB-WASM engine.",
+  "engines": {
+    "node": ">=22.9"
+  },
+  "scripts": {
+    "test": "node --env-file-if-exists=.env --test --test-reporter=spec \"tests/**/*.test.js\"",
+    "vendor": "node scripts/vendor_duckdb.mjs"
+  },
+  "dependencies": {
+    "@duckdb/duckdb-wasm": "1.32.0"
+  }
+}

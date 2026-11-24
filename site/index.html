@@ -2,10 +2,12 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-S9P+NT8fZqExDT7BxCS4y/YZo+CakVMqLZIVXRd88Yk='; style-src 'self'; img-src 'self' data:; connect-src 'self' https://openrouter.ai; worker-src 'self'; base-uri 'none'; form-action 'none'">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Jumbo Global Operations</title>
   <meta name="description" content="A data story on Jumbo's global e-commerce operations: revenue, returns, delivery and customer satisfaction, 2023 to 2025.">
   <link rel="stylesheet" href="style.css">
+  <script type="importmap">{"imports":{"apache-arrow":"./vendor/apache-arrow/Arrow.dom.mjs","flatbuffers":"./vendor/flatbuffers/mjs/flatbuffers.js","tslib":"./vendor/tslib/tslib.es6.mjs"}}</script>
 </head>
 <body>
   <header class="masthead">
@@ -28,6 +30,27 @@
 
     <div id="story"></div>
 
+    <section class="ask" id="ask" aria-labelledby="ask-heading">
+      <h2 id="ask-heading" class="section-label">Ask the data</h2>
+      <p class="note ask-intro">Ask a question about the orders in plain words. A model on OpenRouter writes a query. This page runs the query in your browser. The model then draws the answer. You need an OpenRouter key. The key stays in the memory of this tab and goes only to openrouter.ai. It is gone when you reload or close the page. Use a key with a low credit limit. The model is Anthropic Claude Haiku 5.5. It can be wrong, so check the query under each answer.</p>
+      <form id="ask-form" class="ask-form" autocomplete="off">
+        <label for="ask-key">OpenRouter key</label>
+        <div class="ask-row">
+          <input id="ask-key" type="password" autocomplete="off" spellcheck="false" placeholder="sk-or-...">
+          <button id="ask-key-forget" type="button" class="ask-button">Forget key</button>
+        </div>
+        <label for="ask-question">Question</label>
+        <div class="ask-row">
+          <input id="ask-question" type="text" maxlength="500" autocomplete="off" placeholder="For example: Which product category has the highest return rate?">
+          <button id="ask-question-clear" type="button" class="ask-button">Clear</button>
+        </div>
+        <p id="ask-draft-status" class="note ask-draft-status"></p>
+        <button id="ask-submit" type="submit" class="ask-button ask-button-primary">Ask</button>
+      </form>
+      <p id="ask-status" class="ask-status" role="status"></p>
+      <div id="ask-answer" class="ask-answer"></div>
+    </section>
+
     <section class="caveats" aria-labelledby="caveats-heading">
       <h2 id="caveats-heading" class="section-label">Caveats and assumptions</h2>
       <ul>
@@ -47,5 +70,6 @@
   </footer>
 
   <script type="module" src="story.js"></script>
+  <script type="module" src="ask/main.js"></script>
 </body>
 </html>

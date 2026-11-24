@@ -239,3 +239,39 @@ a.kpi { display: block; color: inherit; text-decoration: none; }
 .kpi-link { font-size: 13px; color: var(--accent); }
 html { scroll-behavior: smooth; }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+/* Ask the data: the answer that the model composes from catalog components */
+.ask-column { display: grid; gap: 12px; }
+.ask-headline { margin: 0; font-size: clamp(20px, 3vw, 26px); line-height: 1.2; letter-spacing: -0.01em; font-weight: 650; max-width: 40ch; }
+.ask-text { margin: 0; max-width: 66ch; color: var(--ink-2); }
+.ask-caption { margin: 0; font-size: 13px; color: var(--ink-3); max-width: 66ch; }
+
+/* Ask the data: the form */
+.ask { margin: 40px 0 0; padding-top: 24px; border-top: 1px solid var(--border); }
+.ask-intro { max-width: 70ch; }
+.ask-form { display: grid; gap: 8px; margin-top: 16px; max-width: 720px; }
+.ask-form label { font-size: 14px; font-weight: 600; }
+.ask-row { display: flex; gap: 8px; }
+.ask-row input {
+  flex: 1; min-width: 0; font: inherit; color: var(--ink); background: var(--surface);
+  border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px;
+}
+.ask-row input:focus-visible,
+.ask-button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.ask-button {
+  font: inherit; font-size: 14px; color: var(--ink-2); background: transparent;
+  border: 1px solid var(--border); border-radius: 8px; padding: 8px 14px; cursor: pointer;
+}
+.ask-button:hover { background: var(--surface); }
+.ask-button-primary { justify-self: start; color: #ffffff; background: var(--accent); border-color: var(--accent); }
+.ask-button-primary:hover { background: var(--accent); opacity: 0.9; }
+.ask-button:disabled { opacity: 0.6; cursor: progress; }
+.ask-draft-status { margin: 0; min-height: 1.4em; }
+.ask-status { margin: 12px 0 0; min-height: 1.5em; font-size: 14px; color: var(--ink-2); }
+.ask-status-error { color: var(--bad); }
+.ask-answer { margin-top: 16px; display: grid; gap: 12px; }
+.ask-sql { font-size: 13px; color: var(--ink-2); }
+.ask-sql summary { cursor: pointer; width: fit-content; }
+.ask-sql summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.ask-sql pre { margin: 8px 0 0; padding: 12px; overflow-x: auto; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; white-space: pre-wrap; }
+.ask-column > .chip { justify-self: start; min-width: 200px; }
