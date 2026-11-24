@@ -56,6 +56,9 @@ export class UnsafeQueryError extends AskError {
   }
 }
 
+/** The order data or the database did not load. */
+export class DataLoadError extends AskError {}
+
 /** The database failed to run the query. */
 export class QueryFailedError extends AskError {
   /** Stores the SQL that failed. */
