@@ -39,6 +39,14 @@ def export_delivery_csat_correlation() -> Path:
     return path
 
 
+def export_orders_csv() -> Path:
+    """Write one row per order to orders.csv, for the ask panel to query in the browser."""
+    orders: pd.DataFrame = pd.read_sql(q.ORDERS_FOR_ASK_QUERY, engine)
+    path: Path = OUTPUT_DIR / "orders.csv"
+    orders.to_csv(path, index=False)
+    return path
+
+
 def main():
     ensure_db()
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
@@ -49,6 +57,7 @@ def main():
         print(f"Wrote {len(df)} rows to {path}")
 
     print(f"Wrote {export_delivery_csat_correlation()}")
+    print(f"Wrote {export_orders_csv()}")
 
 
 if __name__ == "__main__":

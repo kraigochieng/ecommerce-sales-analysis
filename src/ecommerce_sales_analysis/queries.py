@@ -86,3 +86,26 @@ AVG_DELIVERY_BY_REGION_QUERY = """
     GROUP BY region
     ORDER BY avg_delivery_days DESC;
 """
+
+# One row per order, without the customer ID. The ask panel loads this into the
+# browser and runs read-only SQL on it.
+ORDERS_FOR_ASK_QUERY = """
+    SELECT
+        order_id,
+        product_category,
+        product_price,
+        quantity,
+        order_date,
+        region,
+        payment_method,
+        delivery_days,
+        is_returned,
+        customer_rating,
+        discount_percent,
+        revenue,
+        order_date_year,
+        order_date_month,
+        order_date_year_month
+    FROM orders_cleaned
+    ORDER BY order_id ASC;
+"""
