@@ -37,3 +37,31 @@ The page in [site/](site/) is plain HTML, CSS and JavaScript with hand-written S
 The first version was a Streamlit app on Streamlit Cloud. The insights lived apart from the charts, in README text and static screenshots, and the two could drift apart. Streamlit also limited layout and annotation control, and it needed a server that rebuilt the database on every cold start.
 
 The data is fixed (100,000 orders), so the story page replaces it: each chart carries its own headline, annotations and recommendation. The last commit with the dashboard is tagged [`v0.1.0-streamlit`](https://github.com/kraigochieng/ecommerce-sales-analysis/tree/v0.1.0-streamlit). Check out that tag to run it.
+
+---
+
+### The ask panel: a model answers questions from the browser
+
+The panel lives in [site/ask/](site/ask/). It has no server. The reader brings an OpenRouter key (a paste field, kept in memory only). Issue #19 holds the plan and the decision records.
+
+**Flow.** Each step is one unit.
+
+1.  `prompts.js` builds the messages. The schema, the rules, and the catalog description come from one place each.
+2.  `ask_flow.js` asks the model for one SQL query, runs it, asks the model to design the answer, and validates the design. When the model can fix a problem, the flow asks once more with the problem text.
+3.  `query_guard.js` accepts one `SELECT` or `WITH` statement. `query_engine.js` then loads `orders.csv` into DuckDB-WASM, sets `enable_external_access = false` and `lock_configuration = true`, and runs the query inside a limit of 200 rows.
+4.  `a2ui_validator.js` checks the design against `a2ui_catalog.js`. `a2ui_renderer.js` draws it with `charts.js`. Every text goes in with `textContent`.
+
+**A2UI.** The messages follow the shape of A2UI v0.9.1: `updateComponents` with a flat list of components and child IDs, and bindings such as `{"path": "/rows"}`. The catalog is our own (`jumbo-ask-catalog-v1`: Column, Text, Stat, BarChart, LineChart, Table). The page owns `createSurface` and `updateDataModel`, so the validator refuses them from the model. The page does not use A2UI actions or streaming. I read the v0.9.1 specification, not a reference renderer, and I did not test the messages against another A2UI client.
+
+**Why vendored files and an import map.** The DuckDB-WASM bundle imports `apache-arrow` as a bare module name. A browser cannot resolve that name without an import map. `npm run vendor` copies the files to `site/vendor/` (gitignored, built in CI). The import map is inline, and the Content-Security-Policy allows it by hash. A test checks that the hash matches. If you change the import map, update the hash in `site/index.html`.
+
+**Security limits.**
+
+-   The key is in a closure, not in storage, not in the URL, and not in any message. Any script on the page can still read the field. The policy allows only own scripts, so keep third-party scripts out of `index.html`.
+-   The policy limits `connect-src` to the page and `https://openrouter.ai`. OpenRouter answers with `access-control-allow-origin: *`, so any site can call it with a key.
+-   The guard works on text. The database lock and the in-memory copy of public data are the second line of defense.
+-   The question and the rows go to the model. Treat the model as untrusted: its output passes the validator before it reaches the DOM.
+
+**Tests.** `npm test` runs `node --test` on `tests/`. The live test in `tests/site/ask/live_openrouter.test.js` runs only when `OPENROUTER_API_KEY` is set (for example in `.env`). The renderer and the panel have no automated test, because the repo has no DOM test tool. I checked them by hand in a real browser.
+
+**The `.env` file.** `Settings` ignores keys that it does not declare, so `.env` can hold `OPENROUTER_API_KEY` for the live test.
