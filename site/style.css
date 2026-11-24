@@ -239,3 +239,9 @@ a.kpi { display: block; color: inherit; text-decoration: none; }
 .kpi-link { font-size: 13px; color: var(--accent); }
 html { scroll-behavior: smooth; }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+/* Ask the data: the answer that the model composes from catalog components */
+.ask-column { display: grid; gap: 12px; }
+.ask-headline { margin: 0; font-size: clamp(20px, 3vw, 26px); line-height: 1.2; letter-spacing: -0.01em; font-weight: 650; max-width: 40ch; }
+.ask-text { margin: 0; max-width: 66ch; color: var(--ink-2); }
+.ask-caption { margin: 0; font-size: 13px; color: var(--ink-3); max-width: 66ch; }
