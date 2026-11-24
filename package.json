@@ -7,7 +7,7 @@
     "node": ">=22.9"
   },
   "scripts": {
-    "test": "node --env-file-if-exists=.env --test \"tests/**/*.test.js\"",
+    "test": "node --env-file-if-exists=.env --test --test-reporter=spec \"tests/**/*.test.js\"",
     "vendor": "node scripts/vendor_duckdb.mjs"
   },
   "dependencies": {
